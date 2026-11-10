@@ -1,0 +1,35 @@
+{
+  "arxiv": {
+    "collection": "arxiv",
+    "docs_sent": 1999486,
+    "numFound": 1999486,
+    "send_s": 293.5,
+    "commit_s": 2.9,
+    "total_s": 296.4,
+    "index_size": "2.82 GB",
+    "batch": 5000,
+    "workers": 4
+  },
+  "arxiv_50": {
+    "collection": "arxiv_50",
+    "docs_sent": 999798,
+    "numFound": 999798,
+    "send_s": 145.8,
+    "commit_s": 2.8,
+    "total_s": 148.6,
+    "index_size": "1.29 GB",
+    "batch": 5000,
+    "workers": 4
+  },
+  "arxiv_10": {
+    "collection": "arxiv_10",
+    "docs_sent": 199875,
+    "numFound": 199875,
+    "send_s": 34.3,
+    "commit_s": 2.0,
+    "total_s": 36.3,
+    "index_size": "426.21 MB",
+    "batch": 5000,
+    "workers": 4
+  }
+}

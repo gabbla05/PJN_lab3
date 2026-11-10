@@ -1,0 +1,49 @@
+        0.0s  CREATE EXTENSION IF NOT EXISTS pg_trgm
+        0.0s  DROP TABLE IF EXISTS arxiv_10, arxiv_50, arxiv CASCADE
+        0.0s  CREATE TABLE arxiv ( id varchar(32) PRIMARY KEY, title text NOT NULL, 
+[schema] 0.1 s
+      582.6s  COPY arxiv (id, title, abstract, primary_category, archive, categories
+[copy_load (COPY + wyliczenie tsvector)] 582.6 s
+      172.4s  CREATE INDEX arxiv_tsv_gin ON arxiv USING gin (tsv)
+        6.5s  CREATE INDEX arxiv_archive_idx ON arxiv (archive)
+        1.3s  CREATE INDEX arxiv_year_idx ON arxiv (year)
+       64.7s  CREATE INDEX arxiv_title_trgm ON arxiv USING gin (title gin_trgm_ops)
+        4.3s  ANALYZE arxiv
+[indexes (GIN tsv + btree + trigram) + ANALYZE] 249.2 s
+        0.0s  DROP TABLE IF EXISTS arxiv_10, arxiv_50
+        0.0s  CREATE TABLE arxiv_10 (LIKE arxiv INCLUDING GENERATED INCLUDING CONSTR
+        0.0s  ALTER TABLE arxiv_10 ADD PRIMARY KEY (id)
+       53.5s  INSERT INTO arxiv_10 (id, title, abstract, primary_category, archive, 
+       10.9s  CREATE INDEX arxiv_10_tsv_gin ON arxiv_10 USING gin (tsv)
+        0.6s  ANALYZE arxiv_10
+        0.0s  CREATE TABLE arxiv_50 (LIKE arxiv INCLUDING GENERATED INCLUDING CONSTR
+        0.0s  ALTER TABLE arxiv_50 ADD PRIMARY KEY (id)
+      185.4s  INSERT INTO arxiv_50 (id, title, abstract, primary_category, archive, 
+       70.7s  CREATE INDEX arxiv_50_tsv_gin ON arxiv_50 USING gin (tsv)
+        1.1s  ANALYZE arxiv_50
+[subsets 10%/50% (+ GIN)] 322.1 s
+{
+  "timings_s": {
+    "schema": 0.1,
+    "copy_load (COPY + wyliczenie tsvector)": 582.6,
+    "indexes (GIN tsv + btree + trigram) + ANALYZE": 249.2,
+    "subsets 10%/50% (+ GIN)": 322.1
+  },
+  "stats": {
+    "arxiv": {
+      "rows": 1999486,
+      "total_size": "4952 MB"
+    },
+    "arxiv_50": {
+      "rows": 999798,
+      "total_size": "2328 MB"
+    },
+    "arxiv_10": {
+      "rows": 199875,
+      "total_size": "481 MB"
+    },
+    "arxiv_tsv_gin": "446 MB",
+    "arxiv_title_trgm": "299 MB",
+    "table_heap": "4118 MB"
+  }
+}

@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: lab3-postgres
+    environment:
+      POSTGRES_USER: lab3
+      POSTGRES_PASSWORD: lab3
+      POSTGRES_DB: lab3
+    ports:
+      - "5433:5432"
+    shm_size: 1g
+    command:
+      - postgres
+      - -c
+      - shared_buffers=1GB
+      - -c
+      - effective_cache_size=3GB
+      - -c
+      - maintenance_work_mem=1GB
+      - -c
+      - work_mem=64MB
+      - -c
+      - max_parallel_workers_per_gather=4
+      - -c
+      - max_wal_size=4GB
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./data:/data:ro
+      - ./sql:/sql:ro
+
+  solr:
+    image: solr:10
+    container_name: lab3-solr
+    environment:
+      SOLR_HEAP: 3g
+    ports:
+      - "8983:8983"
+    volumes:
+      - solrdata:/var/solr
+
+volumes:
+  pgdata:
+  solrdata:

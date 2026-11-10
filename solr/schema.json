@@ -1,0 +1,45 @@
+{
+  "add-field-type": [
+    {
+      "name": "text_en_lab",
+      "class": "solr.TextField",
+      "positionIncrementGap": "100",
+      "indexAnalyzer": {
+        "tokenizer": { "class": "solr.StandardTokenizerFactory" },
+        "filters": [
+          { "class": "solr.LowerCaseFilterFactory" },
+          { "class": "solr.StopFilterFactory", "ignoreCase": "true", "words": "lang/stopwords_en.txt" },
+          { "class": "solr.EnglishPossessiveFilterFactory" },
+          { "class": "solr.SnowballPorterFilterFactory", "language": "English" }
+        ]
+      },
+      "queryAnalyzer": {
+        "tokenizer": { "class": "solr.StandardTokenizerFactory" },
+        "filters": [
+          { "class": "solr.LowerCaseFilterFactory" },
+          { "class": "solr.ManagedSynonymGraphFilterFactory", "managed": "english" },
+          { "class": "solr.StopFilterFactory", "ignoreCase": "true", "words": "lang/stopwords_en.txt" },
+          { "class": "solr.EnglishPossessiveFilterFactory" },
+          { "class": "solr.SnowballPorterFilterFactory", "language": "English" }
+        ]
+      }
+    }
+  ],
+  "add-field": [
+    { "name": "title",            "type": "text_en_lab", "indexed": true,  "stored": true },
+    { "name": "abstract",         "type": "text_en_lab", "indexed": true,  "stored": true,
+      "storeOffsetsWithPositions": true },
+    { "name": "text",             "type": "text_en_lab", "indexed": true,  "stored": false, "multiValued": true },
+    { "name": "primary_category", "type": "string", "indexed": true,  "stored": true,  "docValues": true },
+    { "name": "archive",          "type": "string", "indexed": true,  "stored": true,  "docValues": true },
+    { "name": "categories",       "type": "string", "indexed": true,  "stored": true,  "docValues": true, "multiValued": true },
+    { "name": "year",             "type": "pint",   "indexed": true,  "stored": true,  "docValues": true },
+    { "name": "n_versions",       "type": "pint",   "indexed": false, "stored": true,  "docValues": true },
+    { "name": "abstract_len",     "type": "pint",   "indexed": false, "stored": true,  "docValues": true },
+    { "name": "bucket",           "type": "pint",   "indexed": true,  "stored": false, "docValues": true }
+  ],
+  "add-copy-field": [
+    { "source": "title",    "dest": "text" },
+    { "source": "abstract", "dest": "text" }
+  ]
+}

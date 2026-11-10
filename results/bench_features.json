@@ -1,0 +1,1835 @@
+{
+  "ranking": {
+    "Q1": {
+      "label": "slowo: galaxy",
+      "pg": {
+        "sql": "SELECT id, title, year, archive, ts_rank_cd(tsv, q, 1) AS rank FROM arxiv, to_tsquery('english', 'galaxy') q WHERE tsv @@ q ORDER BY rank DESC, id LIMIT 10",
+        "result": 10,
+        "server_ms": 365.24,
+        "client_ms": 352.23,
+        "server_all_ms": [
+          389.39,
+          363.14,
+          351.68,
+          365.24,
+          370.13
+        ]
+      },
+      "pg_docs": [
+        {
+          "id": "1204.2232",
+          "title": "Galaxy-galaxy(-galaxy) lensing as a sensitive probe of galaxy evolution",
+          "year": 2012,
+          "archive": "astro-ph",
+          "rank": 2.2435
+        },
+        {
+          "id": "0807.4932",
+          "title": "Galaxy Clustering & Galaxy-Galaxy Lensing: A Promising Union to Constrain Cosmological Parameters",
+          "year": 2008,
+          "archive": "astro-ph",
+          "rank": 2.2188
+        },
+        {
+          "id": "astro-ph/0606447",
+          "title": "Galaxy Galaxy Lensing as a Probe of Galaxy Dark Matter Halos",
+          "year": 2006,
+          "archive": "astro-ph",
+          "rank": 2.116
+        },
+        {
+          "id": "astro-ph/0502552",
+          "title": "Galaxy-galaxy-galaxy lensing: Third-order correlations between the galaxy and mass distributions in the Universe",
+          "year": 2005,
+          "archive": "astro-ph",
+          "rank": 2.0934
+        },
+        {
+          "id": "1109.1937",
+          "title": "GOODS-Herschel: the impact of galaxy-galaxy interactions on the far-infrared properties of galaxies",
+          "year": 2011,
+          "archive": "astro-ph",
+          "rank": 2.0164
+        },
+        {
+          "id": "2111.11467",
+          "title": "An inventory of galaxies in cosmic filaments feeding galaxy clusters: galaxy groups, backsplash galaxies, and pristine galaxies",
+          "year": 2021,
+          "archive": "astro-ph",
+          "rank": 1.9953
+        },
+        {
+          "id": "astro-ph/0507647",
+          "title": "The DEEP2 Galaxy Redshift Survey: Clustering of Groups and Group Galaxies at z~1",
+          "year": 2005,
+          "archive": "astro-ph",
+          "rank": 1.9924
+        },
+        {
+          "id": "1611.08378",
+          "title": "Alignment of galaxies relative to their local environment in SDSS-DR8",
+          "year": 2016,
+          "archive": "astro-ph",
+          "rank": 1.9499
+        },
+        {
+          "id": "astro-ph/0205546",
+          "title": "Understanding the Results of Galaxy-Galaxy Lensing using Galaxy-Mass Correlation in Numerical Simulations",
+          "year": 2002,
+          "archive": "astro-ph",
+          "rank": 1.9459
+        },
+        {
+          "id": "1903.03127",
+          "title": "PRIMUS: Clustering of Star-forming and Quiescent Central Galaxies at $0.2 < z < 0.9$",
+          "year": 2019,
+          "archive": "astro-ph",
+          "rank": 1.9325
+        }
+      ],
+      "solr": {
+        "url": "http://localhost:8983/solr/arxiv/select?defType=edismax&qf=title%5E2.5+abstract&q.op=OR&q=galaxy&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+        "numFound": 84129,
+        "qtime_ms": 0,
+        "client_ms": 3.97,
+        "qtime_all_ms": [
+          1,
+          0,
+          2,
+          0,
+          0
+        ]
+      },
+      "solr_docs": [
+        {
+          "id": "1204.2232",
+          "title": "Galaxy-galaxy(-galaxy) lensing as a sensitive probe of galaxy evolution",
+          "archive": "astro-ph",
+          "year": 2012,
+          "score": 7.6050415
+        },
+        {
+          "id": "2111.11467",
+          "title": "An inventory of galaxies in cosmic filaments feeding galaxy clusters: galaxy groups, backsplash galaxies, and pristine galaxies",
+          "archive": "astro-ph",
+          "year": 2021,
+          "score": 7.309229
+        },
+        {
+          "id": "astro-ph/0304203",
+          "title": "Quasar-Galaxy and Galaxy-Galaxy Cross-Correlations: Model Predictions with Realistic Galaxies",
+          "archive": "astro-ph",
+          "year": 2003,
+          "score": 7.2891436
+        },
+        {
+          "id": "astro-ph/0008504",
+          "title": "Galaxy Halo Masses from Galaxy-Galaxy Lensing",
+          "archive": "astro-ph",
+          "year": 2000,
+          "score": 7.255913
+        },
+        {
+          "id": "1009.1059",
+          "title": "The Orientation of Galaxies in Galaxy Clusters",
+          "archive": "astro-ph",
+          "year": 2010,
+          "score": 7.1903515
+        },
+        {
+          "id": "1105.1397",
+          "title": "Galaxy subgroups in galaxy clusters",
+          "archive": "astro-ph",
+          "year": 2011,
+          "score": 7.1903515
+        },
+        {
+          "id": "1201.1960",
+          "title": "Moderate Galaxy-Galaxy Lensing",
+          "archive": "astro-ph",
+          "year": 2012,
+          "score": 7.1903515
+        },
+        {
+          "id": "astro-ph/0006281",
+          "title": "Anisotropic Galaxy-Galaxy Lensing",
+          "archive": "astro-ph",
+          "year": 2000,
+          "score": 7.1903515
+        },
+        {
+          "id": "astro-ph/0007433",
+          "title": "Disk Galaxies and Galaxy Disks",
+          "archive": "astro-ph",
+          "year": 2000,
+          "score": 7.1903515
+        },
+        {
+          "id": "astro-ph/0404023",
+          "title": "Simulating Galaxies and Galaxy Clusters",
+          "archive": "astro-ph",
+          "year": 2004,
+          "score": 7.1903515
+        }
+      ],
+      "overlap": 2,
+      "common_ids": [
+        "1204.2232",
+        "2111.11467"
+      ]
+    },
+    "Q2": {
+      "label": "fraza: \"dark matter halo\"",
+      "pg": {
+        "sql": "SELECT id, title, year, archive, ts_rank_cd(tsv, q, 1) AS rank FROM arxiv, phraseto_tsquery('english', 'dark matter halo') q WHERE tsv @@ q ORDER BY rank DESC, id LIMIT 10",
+        "result": 10,
+        "server_ms": 72.14,
+        "client_ms": 75.65,
+        "server_all_ms": [
+          63.99,
+          86.64,
+          71.67,
+          72.14,
+          80.29
+        ]
+      },
+      "pg_docs": [
+        {
+          "id": "1804.04492",
+          "title": "Stellar Velocity Dispersion: Linking Quiescent Galaxies to their Dark Matter Halos",
+          "year": 2018,
+          "archive": "astro-ph",
+          "rank": 0.9618
+        },
+        {
+          "id": "1807.00879",
+          "title": "Dynamical Imprint of Dark Matter Halo and Interstellar Gas on Spiral Structure in Disk Galaxies",
+          "year": 2018,
+          "archive": "astro-ph",
+          "rank": 0.7855
+        },
+        {
+          "id": "1803.00767",
+          "title": "Black Hole Space-time In Dark Matter Halo",
+          "year": 2018,
+          "archive": "gr-qc",
+          "rank": 0.7325
+        },
+        {
+          "id": "1801.08592",
+          "title": "Stellar Bar evolution in the absence of dark matter halo",
+          "year": 2018,
+          "archive": "astro-ph",
+          "rank": 0.6861
+        },
+        {
+          "id": "1511.05536",
+          "title": "Effect of dark matter halo on global spiral modes in galaxies",
+          "year": 2015,
+          "archive": "astro-ph",
+          "rank": 0.6683
+        },
+        {
+          "id": "astro-ph/0608614",
+          "title": "Empirical Models for Dark Matter Halos. III. The Kormendy relation and the log(rho_e)-log(R_e) relation",
+          "year": 2006,
+          "archive": "astro-ph",
+          "rank": 0.6387
+        },
+        {
+          "id": "1112.4268",
+          "title": "Simulation studies of dark energy clustering induced by the formation of dark matter halos",
+          "year": 2011,
+          "archive": "astro-ph",
+          "rank": 0.6382
+        },
+        {
+          "id": "1906.08327",
+          "title": "The influence of the void environment on the ratio of dark matter halo mass to stellar mass in SDSS MaNGA galaxies",
+          "year": 2019,
+          "archive": "astro-ph",
+          "rank": 0.6255
+        },
+        {
+          "id": "1502.00775",
+          "title": "The Blackhole-Dark Matter Halo Connection",
+          "year": 2015,
+          "archive": "astro-ph",
+          "rank": 0.608
+        },
+        {
+          "id": "2012.07071",
+          "title": "The role of dark matter halo in the evolution of the non-stationary disk of spiral galaxies",
+          "year": 2020,
+          "archive": "astro-ph",
+          "rank": 0.6004
+        }
+      ],
+      "solr": {
+        "url": "http://localhost:8983/solr/arxiv/select?defType=edismax&qf=title%5E2.5+abstract&q.op=OR&q=%22dark+matter+halo%22&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+        "numFound": 5423,
+        "qtime_ms": 0,
+        "client_ms": 3.48,
+        "qtime_all_ms": [
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      },
+      "solr_docs": [
+        {
+          "id": "0709.0434",
+          "title": "Relaxed Dark Matter Halos",
+          "archive": "astro-ph",
+          "year": 2007,
+          "score": 20.857563
+        },
+        {
+          "id": "0711.0466",
+          "title": "A Model for Dark Matter Halos",
+          "archive": "astro-ph",
+          "year": 2007,
+          "score": 20.857563
+        },
+        {
+          "id": "0812.2033",
+          "title": "The Graininess of Dark Matter Haloes",
+          "archive": "astro-ph",
+          "year": 2008,
+          "score": 20.857563
+        },
+        {
+          "id": "1705.08746",
+          "title": "A Model For Dark Matter Halos",
+          "archive": "physics",
+          "year": 2017,
+          "score": 20.857563
+        },
+        {
+          "id": "1907.11775",
+          "title": "Dark matter haloes and subhaloes",
+          "archive": "astro-ph",
+          "year": 2019,
+          "score": 20.857563
+        },
+        {
+          "id": "2101.01282",
+          "title": "A cuspy dark matter halo",
+          "archive": "astro-ph",
+          "year": 2021,
+          "score": 20.857563
+        },
+        {
+          "id": "astro-ph/0106380",
+          "title": "Shapes of dark matter halos",
+          "archive": "astro-ph",
+          "year": 2001,
+          "score": 20.857563
+        },
+        {
+          "id": "astro-ph/0206126",
+          "title": "Properties of Dark Matter Haloes",
+          "archive": "astro-ph",
+          "year": 2002,
+          "score": 20.857563
+        },
+        {
+          "id": "astro-ph/0308348",
+          "title": "Dwarf Dark Matter Halos",
+          "archive": "astro-ph",
+          "year": 2003,
+          "score": 20.857563
+        },
+        {
+          "id": "astro-ph/0411409",
+          "title": "Weighing the Dark Matter Halo",
+          "archive": "astro-ph",
+          "year": 2004,
+          "score": 20.857563
+        }
+      ],
+      "overlap": 0,
+      "common_ids": []
+    },
+    "Q3": {
+      "label": "neural AND (image OR speech) AND NOT convolutional",
+      "pg": {
+        "sql": "SELECT id, title, year, archive, ts_rank_cd(tsv, q, 1) AS rank FROM arxiv, to_tsquery('english', 'neural & (image | speech) & !convolutional') q WHERE tsv @@ q ORDER BY rank DESC, id LIMIT 10",
+        "result": 10,
+        "server_ms": 104.05,
+        "client_ms": 118.84,
+        "server_all_ms": [
+          94.89,
+          104.05,
+          115.84,
+          111.38,
+          101.92
+        ]
+      },
+      "pg_docs": [
+        {
+          "id": "2002.09286",
+          "title": "Efficient Trainable Front-Ends for Neural Speech Enhancement",
+          "year": 2020,
+          "archive": "eess",
+          "rank": 0.4554
+        },
+        {
+          "id": "1912.08771",
+          "title": "Computationally Efficient Neural Image Compression",
+          "year": 2019,
+          "archive": "eess",
+          "rank": 0.4417
+        },
+        {
+          "id": "2108.01199",
+          "title": "Neural Image Representations for Multi-Image Fusion and Layer Separation",
+          "year": 2021,
+          "archive": "cs",
+          "rank": 0.4354
+        },
+        {
+          "id": "2105.07512",
+          "title": "Substitutional Neural Image Compression",
+          "year": 2021,
+          "archive": "cs",
+          "rank": 0.4203
+        },
+        {
+          "id": "2103.15726",
+          "title": "Slimmable Compressive Autoencoders for Practical Neural Image Compression",
+          "year": 2021,
+          "archive": "eess",
+          "rank": 0.4034
+        },
+        {
+          "id": "2104.05168",
+          "title": "Soft then Hard: Rethinking the Quantization in Neural Image Compression",
+          "year": 2021,
+          "archive": "eess",
+          "rank": 0.3994
+        },
+        {
+          "id": "1810.06245",
+          "title": "Bringing back simplicity and lightliness into neural image captioning",
+          "year": 2018,
+          "archive": "cs",
+          "rank": 0.3975
+        },
+        {
+          "id": "2010.02636",
+          "title": "Neural Speech Synthesis for Estonian",
+          "year": 2020,
+          "archive": "cs",
+          "rank": 0.3894
+        },
+        {
+          "id": "2104.09370",
+          "title": "DANICE: Domain adaptation without forgetting in neural image compression",
+          "year": 2021,
+          "archive": "cs",
+          "rank": 0.3645
+        },
+        {
+          "id": "1810.11846",
+          "title": "LPCNet: Improving Neural Speech Synthesis Through Linear Prediction",
+          "year": 2018,
+          "archive": "eess",
+          "rank": 0.3543
+        }
+      ],
+      "solr": {
+        "url": "http://localhost:8983/solr/arxiv/select?defType=edismax&qf=title%5E2.5+abstract&q.op=OR&q=%2Bneural+%2B%28image+speech%29+-convolutional&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+        "numFound": 10713,
+        "qtime_ms": 0,
+        "client_ms": 3.53,
+        "qtime_all_ms": [
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      },
+      "solr_docs": [
+        {
+          "id": "2003.13217",
+          "title": "Deep Residual Neural Networks for Image in Speech Steganography",
+          "archive": "cs",
+          "year": 2020,
+          "score": 17.833582
+        },
+        {
+          "id": "2010.02636",
+          "title": "Neural Speech Synthesis for Estonian",
+          "archive": "cs",
+          "year": 2020,
+          "score": 15.225211
+        },
+        {
+          "id": "2106.15561",
+          "title": "A Survey on Neural Speech Synthesis",
+          "archive": "eess",
+          "year": 2021,
+          "score": 15.225211
+        },
+        {
+          "id": "2109.08710",
+          "title": "On-device neural speech synthesis",
+          "archive": "eess",
+          "year": 2021,
+          "score": 15.225211
+        },
+        {
+          "id": "cs/9811031",
+          "title": "Speech Synthesis with Neural Networks",
+          "archive": "cs",
+          "year": 1998,
+          "score": 15.225211
+        },
+        {
+          "id": "1909.03795",
+          "title": "Language learning using Speech to Image retrieval",
+          "archive": "cs",
+          "year": 2019,
+          "score": 14.790965
+        },
+        {
+          "id": "1811.00707",
+          "title": "Training Neural Speech Recognition Systems with Synthetic Speech Augmentation",
+          "archive": "cs",
+          "year": 2018,
+          "score": 14.775007
+        },
+        {
+          "id": "2008.12889",
+          "title": "Source-Aware Neural Speech Coding for Noisy Speech Compression",
+          "archive": "eess",
+          "year": 2020,
+          "score": 14.775007
+        },
+        {
+          "id": "1609.05935",
+          "title": "Advances in All-Neural Speech Recognition",
+          "archive": "cs",
+          "year": 2016,
+          "score": 14.304331
+        },
+        {
+          "id": "1808.00491",
+          "title": "Low-Latency Neural Speech Translation",
+          "archive": "cs",
+          "year": 2018,
+          "score": 14.304331
+        }
+      ],
+      "overlap": 1,
+      "common_ids": [
+        "2010.02636"
+      ]
+    }
+  },
+  "groupby_4": {
+    "pg": {
+      "sql": "SELECT archive, count(*) c FROM arxiv WHERE tsv @@ to_tsquery('english', 'neural & (image | speech) & !convolutional') GROUP BY archive ORDER BY c DESC",
+      "result": 17,
+      "rows": [
+        [
+          "cs",
+          7999
+        ],
+        [
+          "eess",
+          1561
+        ],
+        [
+          "stat",
+          306
+        ],
+        [
+          "q-bio",
+          244
+        ],
+        [
+          "physics",
+          234
+        ],
+        [
+          "astro-ph",
+          171
+        ],
+        [
+          "math",
+          55
+        ],
+        [
+          "cond-mat",
+          54
+        ],
+        [
+          "quant-ph",
+          37
+        ],
+        [
+          "nlin",
+          7
+        ],
+        [
+          "hep-ph",
+          7
+        ],
+        [
+          "cmp-lg",
+          6
+        ],
+        [
+          "hep-ex",
+          5
+        ],
+        [
+          "q-fin",
+          2
+        ],
+        [
+          "hep-lat",
+          2
+        ],
+        [
+          "econ",
+          1
+        ],
+        [
+          "hep-th",
+          1
+        ]
+      ],
+      "server_ms": 23.91,
+      "client_ms": 28.96,
+      "server_all_ms": [
+        25.14,
+        24.15,
+        23.42,
+        22.07,
+        23.91
+      ]
+    },
+    "solr": {
+      "url": "http://localhost:8983/solr/arxiv/select?q=%2Btext%3Aneural+%2B%28text%3Aimage+text%3Aspeech%29+-text%3Aconvolutional&rows=0&facet=true&facet.field=archive&facet.mincount=1",
+      "numFound": 10713,
+      "qtime_ms": 1,
+      "client_ms": 3.46,
+      "qtime_all_ms": [
+        1,
+        0,
+        1,
+        1,
+        1
+      ],
+      "facet": [
+        [
+          "cs",
+          8018
+        ],
+        [
+          "eess",
+          1562
+        ],
+        [
+          "stat",
+          306
+        ],
+        [
+          "q-bio",
+          244
+        ],
+        [
+          "physics",
+          235
+        ],
+        [
+          "astro-ph",
+          171
+        ],
+        [
+          "math",
+          55
+        ],
+        [
+          "cond-mat",
+          54
+        ],
+        [
+          "quant-ph",
+          37
+        ],
+        [
+          "hep-ph",
+          7
+        ],
+        [
+          "nlin",
+          7
+        ],
+        [
+          "cmp-lg",
+          6
+        ],
+        [
+          "hep-ex",
+          5
+        ],
+        [
+          "hep-lat",
+          2
+        ],
+        [
+          "q-fin",
+          2
+        ],
+        [
+          "econ",
+          1
+        ],
+        [
+          "hep-th",
+          1
+        ]
+      ]
+    }
+  },
+  "facets_vs_groupby": {
+    "query": "Q1",
+    "pg": {
+      "group_archive": {
+        "sql": "SELECT archive, count(*) c FROM arxiv WHERE tsv @@ to_tsquery('english', 'galaxy') GROUP BY archive ORDER BY c DESC, archive LIMIT 10",
+        "result": 10,
+        "rows": [
+          [
+            "astro-ph",
+            81544
+          ],
+          [
+            "gr-qc",
+            967
+          ],
+          [
+            "hep-ph",
+            666
+          ],
+          [
+            "physics",
+            498
+          ],
+          [
+            "hep-th",
+            93
+          ],
+          [
+            "cs",
+            89
+          ],
+          [
+            "math",
+            48
+          ],
+          [
+            "stat",
+            34
+          ],
+          [
+            "nlin",
+            24
+          ],
+          [
+            "cond-mat",
+            21
+          ]
+        ],
+        "server_ms": 112.63,
+        "client_ms": 101.32,
+        "server_all_ms": [
+          112.63,
+          104.02,
+          119.2,
+          105.32,
+          119.04
+        ]
+      },
+      "group_primary_category": {
+        "sql": "SELECT primary_category, count(*) c FROM arxiv WHERE tsv @@ to_tsquery('english', 'galaxy') GROUP BY primary_category ORDER BY c DESC, primary_category LIMIT 10",
+        "result": 10,
+        "rows": [
+          [
+            "astro-ph",
+            32530
+          ],
+          [
+            "astro-ph.GA",
+            22238
+          ],
+          [
+            "astro-ph.CO",
+            17724
+          ],
+          [
+            "astro-ph.HE",
+            5500
+          ],
+          [
+            "astro-ph.SR",
+            1914
+          ],
+          [
+            "astro-ph.IM",
+            1355
+          ],
+          [
+            "gr-qc",
+            967
+          ],
+          [
+            "hep-ph",
+            666
+          ],
+          [
+            "astro-ph.EP",
+            283
+          ],
+          [
+            "physics.gen-ph",
+            271
+          ]
+        ],
+        "server_ms": 106.33,
+        "client_ms": 107.51,
+        "server_all_ms": [
+          171.58,
+          104.61,
+          106.33,
+          104.15,
+          111.13
+        ]
+      },
+      "group_year_range": {
+        "sql": "SELECT (1991 + ((year - 1991) / 5) * 5) AS y, count(*) c FROM arxiv WHERE tsv @@ to_tsquery('english', 'galaxy') GROUP BY y ORDER BY y",
+        "result": 7,
+        "rows": [
+          [
+            1991,
+            1370
+          ],
+          [
+            1996,
+            9117
+          ],
+          [
+            2001,
+            13349
+          ],
+          [
+            2006,
+            16509
+          ],
+          [
+            2011,
+            18718
+          ],
+          [
+            2016,
+            20795
+          ],
+          [
+            2021,
+            4215
+          ]
+        ],
+        "server_ms": 108.43,
+        "client_ms": 95.99,
+        "server_all_ms": [
+          102.37,
+          101.76,
+          108.43,
+          147.18,
+          116.32
+        ]
+      },
+      "grouping_sets": {
+        "sql": "SELECT archive, primary_category, (1991 + ((year - 1991) / 5) * 5) AS y, count(*) c FROM arxiv WHERE tsv @@ to_tsquery('english', 'galaxy') GROUP BY GROUPING SETS ((archive), (primary_category), ((1991 + ((year - 1991) / 5) * 5)))",
+        "result": 122,
+        "rows": [
+          [
+            "nucl-th",
+            null,
+            null,
+            12
+          ],
+          [
+            "cs",
+            null,
+            null,
+            89
+          ],
+          [
+            "chao-dyn",
+            null,
+            null,
+            1
+          ],
+          [
+            "q-fin",
+            null,
+            null,
+            2
+          ],
+          [
+            "math-ph",
+            null,
+            null,
+            20
+          ],
+          [
+            "math",
+            null,
+            null,
+            48
+          ],
+          [
+            "physics",
+            null,
+            null,
+            498
+          ],
+          [
+            "astro-ph",
+            null,
+            null,
+            81544
+          ],
+          [
+            "quant-ph",
+            null,
+            null,
+            5
+          ],
+          [
+            "nlin",
+            null,
+            null,
+            24
+          ],
+          [
+            "hep-ph",
+            null,
+            null,
+            666
+          ],
+          [
+            "nucl-ex",
+            null,
+            null,
+            11
+          ],
+          [
+            "hep-th",
+            null,
+            null,
+            93
+          ],
+          [
+            "stat",
+            null,
+            null,
+            34
+          ],
+          [
+            "q-bio",
+            null,
+            null,
+            11
+          ],
+          [
+            "hep-ex",
+            null,
+            null,
+            21
+          ],
+          [
+            "cond-mat",
+            null,
+            null,
+            21
+          ],
+          [
+            "eess",
+            null,
+            null,
+            6
+          ],
+          [
+            "gr-qc",
+            null,
+            null,
+            967
+          ],
+          [
+            null,
+            "math.NA",
+            null,
+            1
+          ],
+          [
+            null,
+            "eess.IV",
+            null,
+            2
+          ],
+          [
+            null,
+            "q-fin.GN",
+            null,
+            1
+          ],
+          [
+            null,
+            "physics.bio-ph",
+            null,
+            2
+          ],
+          [
+            null,
+            "physics.space-ph",
+            null,
+            21
+          ],
+          [
+            null,
+            "physics.flu-dyn",
+            null,
+            8
+          ],
+          [
+            null,
+            "cond-mat.quant-gas",
+            null,
+            1
+          ],
+          [
+            null,
+            "math.AT",
+            null,
+            2
+          ],
+          [
+            null,
+            "q-bio.OT",
+            null,
+            1
+          ],
+          [
+            null,
+            "physics.geo-ph",
+            null,
+            1
+          ],
+          [
+            null,
+            "astro-ph.CO",
+            null,
+            17724
+          ],
+          [
+            null,
+            "physics.ao-ph",
+            null,
+            1
+          ],
+          [
+            null,
+            "cs.DB",
+            null,
+            2
+          ],
+          [
+            null,
+            "cs.LG",
+            null,
+            20
+          ],
+          [
+            null,
+            "cs.DS",
+            null,
+            2
+          ],
+          [
+            null,
+            "stat.ME",
+            null,
+            14
+          ],
+          [
+            null,
+            "quant-ph",
+            null,
+            5
+          ],
+          [
+            null,
+            "nlin.CD",
+            null,
+            19
+          ],
+          [
+            null,
+            "cond-mat.supr-con",
+            null,
+            1
+          ],
+          [
+            null,
+            "physics.optics",
+            null,
+            3
+          ],
+          [
+            null,
+            "physics.class-ph",
+            null,
+            4
+          ],
+          [
+            null,
+            "astro-ph.GA",
+            null,
+            22238
+          ],
+          [
+            null,
+            "cs.AI",
+            null,
+            1
+          ],
+          [
+            null,
+            "cs.CV",
+            null,
+            27
+          ],
+          [
+            null,
+            "physics.acc-ph",
+            null,
+            1
+          ],
+          [
+            null,
+            "physics.ed-ph",
+            null,
+            18
+          ],
+          [
+            null,
+            "nlin.PS",
+            null,
+            4
+          ],
+          [
+            null,
+            "astro-ph.SR",
+            null,
+            1914
+          ],
+          [
+            null,
+            "chao-dyn",
+            null,
+            1
+          ],
+          [
+            null,
+            "math.CO",
+            null,
+            11
+          ],
+          [
+            null,
+            "math-ph",
+            null,
+            20
+          ],
+          [
+            null,
+            "astro-ph.IM",
+            null,
+            1355
+          ],
+          [
+            null,
+            "cs.HC",
+            null,
+            8
+          ],
+          [
+            null,
+            "q-fin.MF",
+            null,
+            1
+          ],
+          [
+            null,
+            "physics.hist-ph",
+            null,
+            36
+          ],
+          [
+            null,
+            "math.ST",
+            null,
+            9
+          ],
+          [
+            null,
+            "cs.IT",
+            null,
+            1
+          ],
+          [
+            null,
+            "physics.data-an",
+            null,
+            4
+          ],
+          [
+            null,
+            "physics.atom-ph",
+            null,
+            10
+          ],
+          [
+            null,
+            "q-bio.QM",
+            null,
+            4
+          ],
+          [
+            null,
+            "physics.pop-ph",
+            null,
+            73
+          ],
+          [
+            null,
+            "cs.RO",
+            null,
+            1
+          ],
+          [
+            null,
+            "astro-ph.HE",
+            null,
+            5500
+          ],
+          [
+            null,
+            "hep-ph",
+            null,
+            666
+          ],
+          [
+            null,
+            "math.OC",
+            null,
+            2
+          ],
+          [
+            null,
+            "cs.CG",
+            null,
+            1
+          ],
+          [
+            null,
+            "math.CA",
+            null,
+            3
+          ],
+          [
+            null,
+            "stat.AP",
+            null,
+            13
+          ],
+          [
+            null,
+            "cond-mat.stat-mech",
+            null,
+            10
+          ],
+          [
+            null,
+            "cond-mat",
+            null,
+            2
+          ],
+          [
+            null,
+            "hep-ex",
+            null,
+            21
+          ],
+          [
+            null,
+            "physics.plasm-ph",
+            null,
+            16
+          ],
+          [
+            null,
+            "gr-qc",
+            null,
+            967
+          ],
+          [
+            null,
+            "cs.DC",
+            null,
+            8
+          ],
+          [
+            null,
+            "q-bio.NC",
+            null,
+            1
+          ],
+          [
+            null,
+            "nucl-th",
+            null,
+            12
+          ],
+          [
+            null,
+            "math.FA",
+            null,
+            1
+          ],
+          [
+            null,
+            "eess.SP",
+            null,
+            2
+          ],
+          [
+            null,
+            "physics.soc-ph",
+            null,
+            4
+          ],
+          [
+            null,
+            "q-bio.GN",
+            null,
+            3
+          ],
+          [
+            null,
+            "cond-mat.mes-hall",
+            null,
+            2
+          ],
+          [
+            null,
+            "cs.DL",
+            null,
+            1
+          ],
+          [
+            null,
+            "math.DG",
+            null,
+            1
+          ],
+          [
+            null,
+            "cs.CR",
+            null,
+            5
+          ],
+          [
+            null,
+            "astro-ph",
+            null,
+            32530
+          ],
+          [
+            null,
+            "math.AP",
+            null,
+            3
+          ],
+          [
+            null,
+            "physics.comp-ph",
+            null,
+            12
+          ],
+          [
+            null,
+            "cs.CE",
+            null,
+            3
+          ],
+          [
+            null,
+            "cs.CL",
+            null,
+            3
+          ],
+          [
+            null,
+            "math.AC",
+            null,
+            1
+          ],
+          [
+            null,
+            "nucl-ex",
+            null,
+            11
+          ],
+          [
+            null,
+            "cs.MS",
+            null,
+            1
+          ],
+          [
+            null,
+            "hep-th",
+            null,
+            93
+          ],
+          [
+            null,
+            "cs.CY",
+            null,
+            1
+          ],
+          [
+            null,
+            "physics.chem-ph",
+            null,
+            2
+          ],
+          [
+            null,
+            "physics.ins-det",
+            null,
+            11
+          ],
+          [
+            null,
+            "cond-mat.str-el",
+            null,
+            1
+          ],
+          [
+            null,
+            "cond-mat.mtrl-sci",
+            null,
+            4
+          ],
+          [
+            null,
+            "astro-ph.EP",
+            null,
+            283
+          ],
+          [
+            null,
+            "math.AG",
+            null,
+            1
+          ],
+          [
+            null,
+            "q-bio.MN",
+            null,
+            1
+          ],
+          [
+            null,
+            "math.PR",
+            null,
+            4
+          ],
+          [
+            null,
+            "nlin.AO",
+            null,
+            1
+          ],
+          [
+            null,
+            "eess.AS",
+            null,
+            2
+          ],
+          [
+            null,
+            "math.DS",
+            null,
+            7
+          ],
+          [
+            null,
+            "cs.CC",
+            null,
+            1
+          ],
+          [
+            null,
+            "cs.PF",
+            null,
+            1
+          ],
+          [
+            null,
+            "stat.ML",
+            null,
+            4
+          ],
+          [
+            null,
+            "cs.OH",
+            null,
+            1
+          ],
+          [
+            null,
+            "stat.OT",
+            null,
+            2
+          ],
+          [
+            null,
+            "stat.CO",
+            null,
+            1
+          ],
+          [
+            null,
+            "cs.IR",
+            null,
+            1
+          ],
+          [
+            null,
+            "math.GM",
+            null,
+            1
+          ],
+          [
+            null,
+            "math.GN",
+            null,
+            1
+          ],
+          [
+            null,
+            "q-bio.PE",
+            null,
+            1
+          ],
+          [
+            null,
+            "physics.gen-ph",
+            null,
+            271
+          ],
+          [
+            null,
+            null,
+            1991,
+            1370
+          ],
+          [
+            null,
+            null,
+            1996,
+            9117
+          ],
+          [
+            null,
+            null,
+            2011,
+            18718
+          ],
+          [
+            null,
+            null,
+            2006,
+            16509
+          ],
+          [
+            null,
+            null,
+            2001,
+            13349
+          ],
+          [
+            null,
+            null,
+            2016,
+            20795
+          ],
+          [
+            null,
+            null,
+            2021,
+            4215
+          ]
+        ],
+        "server_ms": 129.0,
+        "client_ms": 112.8,
+        "server_all_ms": [
+          129.0,
+          110.34,
+          111.43,
+          138.11,
+          132.05
+        ]
+      }
+    },
+    "pg_3_queries_sum_ms": 327.39,
+    "solr": {
+      "url": "http://localhost:8983/solr/arxiv/select?q=text%3Agalaxy&rows=0&facet=true&facet.field=archive&facet.field=primary_category&facet.limit=10&facet.mincount=1&facet.range=year&facet.range.start=1991&facet.range.end=2026&facet.range.gap=5",
+      "numFound": 84129,
+      "qtime_ms": 3,
+      "client_ms": 6.62,
+      "qtime_all_ms": [
+        7,
+        3,
+        3,
+        3,
+        4
+      ],
+      "facet_fields": {
+        "archive": [
+          [
+            "astro-ph",
+            81599
+          ],
+          [
+            "gr-qc",
+            967
+          ],
+          [
+            "hep-ph",
+            666
+          ],
+          [
+            "physics",
+            499
+          ],
+          [
+            "hep-th",
+            93
+          ],
+          [
+            "cs",
+            89
+          ],
+          [
+            "math",
+            48
+          ],
+          [
+            "stat",
+            34
+          ],
+          [
+            "nlin",
+            24
+          ],
+          [
+            "cond-mat",
+            21
+          ]
+        ],
+        "primary_category": [
+          [
+            "astro-ph",
+            32547
+          ],
+          [
+            "astro-ph.GA",
+            22247
+          ],
+          [
+            "astro-ph.CO",
+            17741
+          ],
+          [
+            "astro-ph.HE",
+            5504
+          ],
+          [
+            "astro-ph.SR",
+            1916
+          ],
+          [
+            "astro-ph.IM",
+            1361
+          ],
+          [
+            "gr-qc",
+            967
+          ],
+          [
+            "hep-ph",
+            666
+          ],
+          [
+            "astro-ph.EP",
+            283
+          ],
+          [
+            "physics.gen-ph",
+            272
+          ]
+        ]
+      },
+      "facet_ranges": {
+        "year": [
+          [
+            "1991",
+            1372
+          ],
+          [
+            "1996",
+            9121
+          ],
+          [
+            "2001",
+            13357
+          ],
+          [
+            "2006",
+            16517
+          ],
+          [
+            "2011",
+            18732
+          ],
+          [
+            "2016",
+            20815
+          ],
+          [
+            "2021",
+            4215
+          ]
+        ]
+      }
+    }
+  },
+  "highlighting": {
+    "Q1": {
+      "solr": {
+        "url": "http://localhost:8983/solr/arxiv/select?defType=edismax&qf=title%5E2.5+abstract&q.op=OR&q=galaxy&fl=id%2Ctitle&sort=score+desc%2Cid+asc&rows=3&hl=true&hl.fl=title%2Cabstract&hl.snippets=1&hl.fragsize=160&hl.method=unified&hl.tag.pre=%3Cb%3E&hl.tag.post=%3C%2Fb%3E",
+        "numFound": 84129,
+        "qtime_ms": 3,
+        "client_ms": 6.42,
+        "qtime_all_ms": [
+          3,
+          3,
+          5,
+          2,
+          2
+        ],
+        "snippets": {
+          "1204.2232": {
+            "title": "<b>Galaxy</b>-<b>galaxy</b>(-<b>galaxy</b>) lensing as a sensitive probe of <b>galaxy</b> evolution",
+            "abstract": "The gravitational lensing effect provides various ways to study the mass environment of <b>galaxies</b>. We investigate how <b>galaxy</b>-<b>galaxy</b>(-<b>galaxy</b>) lensing can be used to test models of <b>galaxy</b> formation and evolution. "
+          },
+          "2111.11467": {
+            "title": "An inventory of <b>galaxies</b> in cosmic filaments feeding <b>galaxy</b> clusters: <b>galaxy</b> groups, backsplash <b>galaxies</b>, and pristine <b>galaxies</b>",
+            "abstract": "<b>Galaxy</b> clusters grow by accreting <b>galaxies</b> from the field and along filaments of the cosmic web. As <b>galaxies</b> are accreted they are affected by their local environment before they enter (pre-processing), and traverse the cluster potential. "
+          },
+          "astro-ph/0304203": {
+            "title": "Quasar-<b>Galaxy</b> and <b>Galaxy</b>-<b>Galaxy</b> Cross-Correlations: Model Predictions with Realistic <b>Galaxies</b>",
+            "abstract": "With the full Sloan Digital Sky Survey the statistical errors will be below 1 percent for the <b>galaxy</b>-<b>galaxy</b> correlations and significantly larger for QSO-<b>galaxy</b> correlations. Thus accurate constraints on parameters of the <b>galaxy</b> halo occupation distribution can be obtained from small scale measurements and on the bias parameter from large scales. "
+          }
+        }
+      },
+      "pg": {
+        "sql": "SELECT id, ts_headline('english', abstract, q, 'StartSel=<b>, StopSel=</b>, MaxWords=25, MinWords=10, MaxFragments=1') FROM (SELECT id, abstract, q FROM arxiv, to_tsquery('english', 'galaxy') q WHERE tsv @@ q ORDER BY ts_rank_cd(tsv, q, 1) DESC, id LIMIT 3) t",
+        "result": 3,
+        "server_ms": 332.24,
+        "client_ms": 339.36,
+        "server_all_ms": [
+          327.92,
+          349.88,
+          337.92,
+          332.24,
+          326.55
+        ],
+        "snippets": {
+          "1204.2232": "gravitational lensing effect provides various ways to study the mass environment of <b>galaxies</b>. We investigate how <b>galaxy</b>-<b>galaxy</b>(-<b>galaxy</b>) lensing can be used to test",
+          "0807.4932": "<b>Galaxy</b> clustering and <b>galaxy</b>-<b>galaxy</b> lensing probe the connection between <b>galaxies</b> and their dark matter haloes in complementary ways. On one hand, the halo occupation",
+          "astro-ph/0606447": "Universe on various scales. Here we focus on the study of <b>galaxy</b>'s scale dark matter halos with <b>galaxy</b>-<b>galaxy</b> lensing techniques: observing the shapes"
+        }
+      }
+    },
+    "Q2": {
+      "solr": {
+        "url": "http://localhost:8983/solr/arxiv/select?defType=edismax&qf=title%5E2.5+abstract&q.op=OR&q=%22dark+matter+halo%22&fl=id%2Ctitle&sort=score+desc%2Cid+asc&rows=3&hl=true&hl.fl=title%2Cabstract&hl.snippets=1&hl.fragsize=160&hl.method=unified&hl.tag.pre=%3Cb%3E&hl.tag.post=%3C%2Fb%3E",
+        "numFound": 5423,
+        "qtime_ms": 2,
+        "client_ms": 5.16,
+        "qtime_all_ms": [
+          2,
+          3,
+          3,
+          2,
+          2
+        ],
+        "snippets": {
+          "0709.0434": {
+            "title": "Relaxed <b>Dark Matter Halos</b>",
+            "abstract": ""
+          },
+          "0711.0466": {
+            "title": "A Model for <b>Dark Matter Halos</b>",
+            "abstract": ""
+          },
+          "0812.2033": {
+            "title": "The Graininess of <b>Dark Matter Haloes</b>",
+            "abstract": "Via Lactea II also shows the presence of cold streams made visible by their high 6D phase space density. Generally, the structure of <b>dark matter haloes</b> shows a high degree of graininess in phase space that cannot be described by a smooth distribution function."
+          }
+        }
+      },
+      "pg": {
+        "sql": "SELECT id, ts_headline('english', abstract, q, 'StartSel=<b>, StopSel=</b>, MaxWords=25, MinWords=10, MaxFragments=1') FROM (SELECT id, abstract, q FROM arxiv, phraseto_tsquery('english', 'dark matter halo') q WHERE tsv @@ q ORDER BY ts_rank_cd(tsv, q, 1) DESC, id LIMIT 3) t",
+        "result": 3,
+        "server_ms": 69.23,
+        "client_ms": 69.38,
+        "server_all_ms": [
+          69.23,
+          68.59,
+          85.43,
+          79.77,
+          63.25
+        ],
+        "snippets": {
+          "1804.04492": "stellar velocity dispersion of quiescent galaxies as an observational probe of <b>dark</b> <b>matter</b> <b>halo</b> velocity dispersion and mass. Stellar velocity dispersion is proportional to <b>dark</b>",
+          "1807.00879": "dynamical effect of two structural components of disk galaxies, namely, the <b>dark</b> <b>matter</b> <b>halo</b> and the interstellar gas on the origin and persistence issue",
+          "1803.00767": "obtain the analytical form of black hole space-time metric in <b>dark</b> <b>matter</b> <b>halo</b> for the stationary situation. Using the relation between the rotation velocity"
+        }
+      }
+    }
+  }
+}

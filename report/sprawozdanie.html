@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Lab3 – SQL kontra Solr – sprawozdanie</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 16mm 15mm; }
+  body { font-family: "Segoe UI", Calibri, Arial, sans-serif; font-size: 10.2pt; line-height: 1.42; color: #1d2733; }
+  h1 { font-size: 19pt; color: #1f4e79; margin: 0 0 4px; border-bottom: 2px solid #1f4e79; padding-bottom: 4px; }
+  h2 { font-size: 13.5pt; color: #1f4e79; margin: 20px 0 6px; page-break-after: avoid; }
+  h3 { font-size: 11pt; color: #2e75b6; margin: 12px 0 4px; page-break-after: avoid; }
+  p { margin: 4px 0 7px; text-align: justify; }
+  .meta { color: #555; margin-bottom: 10px; }
+  table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; font-size: 9pt; page-break-inside: avoid; }
+  th { background: #1f4e79; color: #fff; text-align: left; padding: 3px 6px; font-weight: 600; }
+  td { border-bottom: 1px solid #d5dde6; padding: 3px 6px; vertical-align: top; }
+  tr:nth-child(even) td { background: #f3f7fb; }
+  td.n, th.n { text-align: right; white-space: nowrap; }
+  code, pre { font-family: Consolas, "Courier New", monospace; font-size: 8.4pt; }
+  code { background: #eef2f6; padding: 0 3px; border-radius: 2px; }
+  pre { background: #f4f6f8; border-left: 3px solid #2e75b6; padding: 6px 8px; white-space: pre-wrap; word-break: break-all; margin: 4px 0 8px; page-break-inside: avoid; }
+  img { display: block; max-width: 100%; margin: 6px auto 4px; page-break-inside: avoid; }
+  .cap { text-align: center; color: #555; font-size: 8.8pt; margin-bottom: 10px; }
+  .box { background: #eef5fb; border: 1px solid #c6dbef; padding: 6px 10px; margin: 8px 0; page-break-inside: avoid; }
+  b.hl, .snip b { background: #ffe58a; font-weight: 600; }
+  ul { margin: 4px 0 8px 18px; padding: 0; }
+  li { margin: 2px 0; }
+  .pb { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<h1>Laboratorium 3 – wyszukiwanie pełnotekstowe: PostgreSQL kontra Apache Solr</h1>
+<div class="meta">
+  Autorzy: <b>Gabriela Błąut</b>, <b>Michał Brzeziński</b> &nbsp;·&nbsp; Poziom: <b>5.0</b> &nbsp;·&nbsp; Data pomiarów: 10.11.2026<br>
+  Stos: PostgreSQL 17.11 · Apache Solr 10.1.0 (SolrCloud) · Python 3.14 (requests, psycopg 3, matplotlib) · Docker 29.1
+</div>
+
+<h2>1. Środowisko testowe</h2>
+<table>
+  <tr><th>Element</th><th>Wartość</th></tr>
+  <tr><td>Procesor</td><td>Intel Core Ultra 5 226V (8 rdzeni / 8 wątków)</td></tr>
+  <tr><td>Pamięć RAM</td><td>16 GB (15,6 GB dostępne); Docker Desktop (WSL2): 7,5 GB, 8 CPU</td></tr>
+  <tr><td>Dysk</td><td>Samsung NVMe SSD 512 GB (MZAL8512HFLU)</td></tr>
+  <tr><td>System</td><td>Windows 11 Home 10.0.26200, Docker Desktop 29.1.2 (WSL2)</td></tr>
+  <tr><td>PostgreSQL</td><td>17.11 (obraz <code>postgres:17</code>); <code>shared_buffers=1GB</code>, <code>work_mem=64MB</code>, <code>maintenance_work_mem=1GB</code>, do 4 workerów równoległych</td></tr>
+  <tr><td>Solr</td><td>10.1.0 (obraz <code>solr:10</code>), tryb SolrCloud, 1 shard / 1 replika, <code>SOLR_HEAP=3g</code></td></tr>
+</table>
+<p>Oba silniki działały jednocześnie w kontenerach na tej samej maszynie i miały do dyspozycji te same zasoby. Klient (Python) działał na hoście i łączył się przez localhost.</p>
+
+<h2>2. Zbiór danych</h2>
+<table>
+  <tr><th>Cecha</th><th>Wartość</th></tr>
+  <tr><td>Źródło</td><td>Metadane arXiv (Cornell University), mirror <code>gfissore/arxiv-abstracts-2021</code> na Hugging Face; oryginał na Kaggle: <code>Cornell-University/arxiv</code></td></tr>
+  <tr><td>Licencja</td><td>CC0 1.0 – domena publiczna</td></tr>
+  <tr><td>Liczba rekordów</td><td><b>1 999 486</b> (oryginalne rekordy, <b>bez powielania</b>)</td></tr>
+  <tr><td>Rozmiar</td><td>0,9 GB jsonl.gz → 2,1 GB CSV; PostgreSQL: 4,9 GB (tabela 4,1 GB + indeksy); Solr: 2,8 GB indeksu</td></tr>
+  <tr><td>Tekst</td><td><code>title</code> (śr. 72 znaki) + <code>abstract</code> (śr. <b>909 znaków</b>), język angielski</td></tr>
+  <tr><td>Pola kategoryczne</td><td><code>archive</code> – 38 wartości; <code>primary_category</code> – 172 wartości; <code>categories</code> – wielowartościowe</td></tr>
+  <tr><td>Pola liczbowe</td><td><code>year</code> 1991–2021 (wyznaczony z identyfikatora YYMM), <code>n_versions</code>, <code>abstract_len</code></td></tr>
+  <tr><td>Klucz</td><td><code>id</code> – identyfikator arXiv (np. <code>2010.02636</code>, <code>astro-ph/0606447</code>)</td></tr>
+</table>
+<p>Przygotowanie danych: skrypt <code>prepare_data.py</code> strumieniowo czyta plik jsonl.gz i zapisuje CSV. Normalizuje białe znaki, wylicza <code>archive</code> (część kategorii przed kropką) i <code>year</code>, a także pole techniczne <code>bucket = crc32(id) mod 100</code>, które deterministycznie wycina podzbiory 10% i 50%. Pola <code>authors</code> i <code>submitter</code> zostały pominięte, bo zawierają dane osobowe.</p>
+<p><b>Przykładowy rekord:</b></p>
+<pre>id=2010.02636 | title="Neural Speech Synthesis for Estonian" | primary_category=cs.CL | archive=cs
+categories=[cs.CL] | year=2020 | n_versions=1 | abstract_len=1047
+abstract="This technical report describes the results of a collaboration between the NLP research
+group at the University of Tartu and the Institute of Estonian Language on improving neural speech
+synthesis for Estonian. ..."</pre>
+<p><b>Powielanie danych:</b> nie było potrzebne, bo zbiór ma prawie 2 mln oryginalnych rekordów, czyli 4× więcej niż wymagane minimum. Dzięki temu w top-10 nie ma duplikatów, a liczności facetów odpowiadają rzeczywistemu rozkładowi.</p>
+
+<h2>3. Schematy</h2>
+<h3>3.1. PostgreSQL – tabela i indeks pełnotekstowy</h3>
+<pre>CREATE TABLE arxiv (
+  id varchar(32) PRIMARY KEY,  title text NOT NULL,  abstract text NOT NULL,
+  primary_category varchar(32) NOT NULL,  archive varchar(32) NOT NULL,  categories text NOT NULL,
+  year smallint NOT NULL,  n_versions smallint NOT NULL,  abstract_len integer NOT NULL,  bucket smallint NOT NULL,
+  tsv tsvector GENERATED ALWAYS AS (
+        setweight(to_tsvector('english', title), 'A') ||
+        setweight(to_tsvector('english', abstract), 'B')) STORED );
+CREATE INDEX arxiv_tsv_gin    ON arxiv USING gin (tsv);                 -- indeks pełnotekstowy (446 MB)
+CREATE INDEX arxiv_archive_idx ON arxiv (archive);  CREATE INDEX arxiv_year_idx ON arxiv (year);
+CREATE INDEX arxiv_title_trgm ON arxiv USING gin (title gin_trgm_ops);  -- pg_trgm, rozszerzenie E2 (299 MB)</pre>
+<p>Kolumna <code>tsvector</code> jest generowana (STORED). Wyliczają ją <code>COPY</code> i każda zmiana rekordu, więc nie trzeba pisać triggerów. Konfiguracja <code>english</code> to parser PostgreSQL, stoplista angielska (127 słów) i stemmer Snowball English. Wagi A (tytuł) i B (abstrakt) są wykorzystywane przez <code>ts_rank_cd</code>.</p>
+
+<h3>3.2. Solr – schemat i uzasadnienie flag</h3>
+<p>Każda kolekcja (<code>arxiv</code>, <code>arxiv_50</code>, <code>arxiv_10</code>) ma własny configset, będący kopią <code>_default</code>. Tryb schemaless jest wyłączony (<code>set-user-property update.autoCreateFields=false</code>), a pola dodaje Schema API z pliku <code>solr/schema.json</code>.</p>
+<table>
+  <tr><th>Pole</th><th>Typ</th><th>indexed</th><th>stored</th><th>docValues</th><th>multiValued</th><th>Uzasadnienie</th></tr>
+  <tr><td>id</td><td>string</td><td>✔</td><td>✔</td><td>✔</td><td></td><td>uniqueKey; sortowanie pomocnicze i <code>cursorMark</code> wymagają docValues</td></tr>
+  <tr><td>title</td><td>text_en_lab</td><td>✔</td><td>✔</td><td></td><td></td><td>przeszukiwane w eDisMax (waga 2,5); stored do wyświetlenia i podświetlania</td></tr>
+  <tr><td>abstract</td><td>text_en_lab</td><td>✔</td><td>✔</td><td></td><td></td><td>główny tekst; stored do <code>hl</code>; <code>storeOffsetsWithPositions</code> przyspiesza unified highlighter</td></tr>
+  <tr><td>text</td><td>text_en_lab</td><td>✔</td><td>✘</td><td></td><td>✔</td><td>copyField title+abstract – odpowiednik kolumny <code>tsv</code>; nie przechowujemy (oszczędność miejsca)</td></tr>
+  <tr><td>archive, primary_category</td><td>string</td><td>✔</td><td>✔</td><td>✔</td><td></td><td>filtry <code>fq</code> (indexed) i facety (docValues = kolumnowy dostęp, bez un-invertingu na stercie)</td></tr>
+  <tr><td>categories</td><td>string</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>praca może mieć wiele kategorii</td></tr>
+  <tr><td>year</td><td>pint</td><td>✔</td><td>✔</td><td>✔</td><td></td><td>zakresy <code>fq=year:[a TO b]</code>, sortowanie i <code>facet.range</code></td></tr>
+  <tr><td>n_versions, abstract_len</td><td>pint</td><td>✘</td><td>✔</td><td>✔</td><td></td><td>tylko do sortowania/funkcji (docValues); nie filtrujemy, więc indeks zbędny</td></tr>
+  <tr><td>bucket</td><td>pint</td><td>✔</td><td>✘</td><td>✔</td><td></td><td>pole techniczne do podzbiorów; nie zwracane</td></tr>
+</table>
+<p><b>Łańcuch analizy <code>text_en_lab</code></b> (jawnie zdefiniowany typ pola):</p>
+<pre>index: StandardTokenizer → LowerCase → Stop(lang/stopwords_en.txt) → EnglishPossessive → SnowballPorter(English)
+query: StandardTokenizer → LowerCase → ManagedSynonymGraph("english") → Stop → EnglishPossessive → SnowballPorter(English)</pre>
+<p>Zamiast <code>PorterStemFilter</code> z domyślnego <code>text_en</code> wybraliśmy SnowballPorter (English). To ten sam algorytm, którego używa PostgreSQL, więc oba systemy dają takie same rdzenie (<code>galaxies → galaxi</code>, <code>running → run</code>). Dzięki temu różnice w wynikach wynikają z tokenizacji i rankingu, a nie ze stemmera. Synonimy działają tylko po stronie zapytania, więc ich zmiana wymaga przeładowania kolekcji, ale nie reindeksacji.</p>
+
+<h2>4. Ładowanie i indeksowanie</h2>
+<table>
+  <tr><th>System</th><th>Krok</th><th class="n">Czas</th><th>Uwagi</th></tr>
+  <tr><td rowspan="4">PostgreSQL</td><td><code>COPY</code> z CSV (w tym wyliczenie tsvector)</td><td class="n">582,6 s</td><td>2,0 mln wierszy; ~3 430 wierszy/s</td></tr>
+  <tr><td><code>CREATE INDEX … USING gin (tsv)</code></td><td class="n">172,4 s</td><td>446 MB</td></tr>
+  <tr><td>btree (archive, year) + GIN trigram (title) + ANALYZE</td><td class="n">76,8 s</td><td>trigram: 299 MB</td></tr>
+  <tr><td><b>Razem do gotowości FTS</b></td><td class="n"><b>755 s</b></td><td>COPY + GIN</td></tr>
+  <tr><td rowspan="3">Solr</td><td><code>/update</code>, paczki po 5 000 dok. JSON, 4 wątki</td><td class="n">293,5 s</td><td>~6 800 dok./s</td></tr>
+  <tr><td>jeden <code>commit</code> na końcu</td><td class="n">2,9 s</td><td>indeks 2,82 GB</td></tr>
+  <tr><td><b>Razem</b></td><td class="n"><b>296,4 s</b></td><td>analiza tekstu + indeks odwrócony</td></tr>
+  <tr><td>Solr 50% / 10%</td><td>indeksowanie podzbiorów</td><td class="n">148,6 s / 36,3 s</td><td>1,29 GB / 426 MB</td></tr>
+</table>
+<img src="../results/charts/load_times.png" style="width:78%">
+<div class="cap">Rys. 1. Czas ładowania i indeksowania 2 mln rekordów.</div>
+<p>Solr zaindeksował zbiór ok. 2,5× szybciej. W PostgreSQL najdroższy jest <code>COPY</code>, który oprócz zapisu wiersza (z TOAST dla długich abstraktów) wylicza dwa <code>to_tsvector</code>, a potem osobno budowany jest GIN. Solr przetwarza paczki równolegle (4 wątki klienta, wielowątkowy indexer), zapisuje segmenty i scala je w tle. Tabela w PG zajmuje więcej miejsca (4,1 GB), bo przechowuje zarówno tekst, jak i wyliczony <code>tsvector</code>.</p>
+
+<h2 class="pb">5. Porównanie funkcjonalne – trzy zapytania</h2>
+<table>
+  <tr><th></th><th>Zapytanie</th><th>PostgreSQL</th><th>Solr (<code>q</code>)</th></tr>
+  <tr><td>Q1</td><td>słowo w dowolnej formie</td><td><code>tsv @@ to_tsquery('english','galaxy')</code></td><td><code>text:galaxy</code></td></tr>
+  <tr><td>Q2</td><td>fraza</td><td><code>tsv @@ phraseto_tsquery('english','dark matter halo')</code></td><td><code>text:"dark matter halo"</code></td></tr>
+  <tr><td>Q3</td><td>A ∧ (B ∨ C) ∧ ¬D</td><td><code>to_tsquery('english','neural &amp; (image | speech) &amp; !convolutional')</code></td><td><code>+text:neural +(text:image text:speech) -text:convolutional</code></td></tr>
+</table>
+<p>Wszystkie zapytania Solra wysyłamy z parametrami <code>q</code>, <code>fl=id,title,year,archive,score</code>, <code>sort=score desc,id asc</code> i <code>rows=10</code>. Pełne URL-e do wklejenia w przeglądarkę oraz SQL są w pliku <code>ZAPYTANIA.md</code>, np.:</p>
+<pre>http://localhost:8983/solr/arxiv/select?q=text%3Agalaxy&amp;fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&amp;sort=score+desc%2Cid+asc&amp;rows=10</pre>
+
+<h3>5.1. Wyniki (100% danych; czasy – mediana z 5 uruchomień, rozgrzany cache)</h3>
+<table>
+  <tr><th>Zapytanie</th><th class="n">LIKE</th><th class="n">SQL FTS</th><th class="n">Solr numFound</th><th class="n">czas LIKE</th><th class="n">czas SQL FTS</th><th class="n">QTime Solr</th><th class="n">QTime bez cache</th></tr>
+  <tr><td>Q1 galaxy</td><td class="n">60 580</td><td class="n">84 073</td><td class="n">84 129</td><td class="n">4 854 ms</td><td class="n">81,4 ms</td><td class="n">0 ms</td><td class="n">3 ms</td></tr>
+  <tr><td>Q2 "dark matter halo"</td><td class="n">5 105</td><td class="n">5 413</td><td class="n">5 423</td><td class="n">4 233 ms</td><td class="n">38,3 ms</td><td class="n">1 ms</td><td class="n">9 ms</td></tr>
+  <tr><td>Q3 neural ∧ (image ∨ speech) ∧ ¬convolutional</td><td class="n">–</td><td class="n">10 692</td><td class="n">10 713</td><td class="n">–</td><td class="n">19,0 ms</td><td class="n">0 ms</td><td class="n">22 ms</td></tr>
+</table>
+<p>LIKE realizujemy jako <code>ILIKE</code> na <code>title</code> i <code>abstract</code>, bo <code>LIKE</code> w PostgreSQL rozróżnia wielkość liter i nie znalazłby „Galaxy” na początku zdania. Czasy SQL to <code>Execution Time</code> z <code>EXPLAIN (ANALYZE, BUFFERS)</code> dla <code>SELECT count(*)</code>. Czas po stronie klienta był praktycznie taki sam (różnica &lt; 3 ms). „QTime bez cache” to zapytanie <code>q={!cache=false}…</code>, które pomija queryResultCache, więc każde powtórzenie jest wykonywane od nowa. Bez tej opcji Solr odpowiada z cache wyników w 0–1 ms. Czas klienta (HTTP) dla Solra wynosił 3,5–26 ms.</p>
+
+<div class="box"><b>Skąd różnice w liczbie wyników?</b>
+<ul>
+<li><b>LIKE kontra FTS (−28% dla Q1):</b> wzorzec <code>'%galaxy%'</code> nie pasuje do <i>galaxies</i>. Stemmer sprowadza obie formy do <code>galaxi</code>. Dla frazy LIKE gubi <i>halos/haloes</i>, myślniki (<i>dark-matter halo</i>) i podwójne spacje.</li>
+<li><b>PostgreSQL kontra Solr (≈0,1%) – tokenizacja.</b> Porównanie zbiorów id dla Q1 pokazało 58 dokumentów tylko w Solrze i 2 tylko w PG. Parser PostgreSQL traktuje <code>galaxy/quasar</code>, <code>star/galaxy</code> czy <code>LMC/Galaxy</code> jak ścieżkę pliku (jeden token), a StandardTokenizer (UAX#29) dzieli je na słowa. Odwrotnie przy <code>galaxies:theoretical</code>: UAX#29 nie tnie słowa na dwukropku między literami, a PG tak. W Q2 słowa złożone z myślnikiem (<code>matter-halo</code>, <code>halo-dominated</code>) PG zapisuje jako złożenie na innych pozycjach, przez co fraza nie pasuje, a Solr dzieli myślnik i frazę znajduje (+10 dokumentów).</li>
+<li><b>Stoplisty:</b> PostgreSQL ma 127 słów, a <code>stopwords_en.txt</code> w Solrze 35 (np. <i>we</i>, <i>were</i>, <i>only</i> zostają w indeksie Solra, zob. rozdz. 11.4). Nasze zapytania nie zawierają stop-słów, więc na liczności to nie wpływa. Wpływa to jednak na pozycje słów, a więc na frazy ze stop-słowem w środku.</li>
+</ul></div>
+
+<h3>5.2. Wariant z filtrem i sortowaniem (fq / sort vs WHERE / ORDER BY)</h3>
+<table>
+  <tr><th>Zapytanie</th><th>Solr <code>fq</code> / <code>sort</code></th><th class="n">SQL wyniki</th><th class="n">Solr numFound</th><th class="n">SQL top-10</th><th class="n">Solr QTime</th></tr>
+  <tr><td>Q1</td><td><code>year:[2015 TO *]</code> / <code>year desc,id asc</code></td><td class="n">29 022</td><td class="n">29 048</td><td class="n">289 ms</td><td class="n">0 ms</td></tr>
+  <tr><td>Q2</td><td><code>archive:astro-ph</code> / <code>year desc,id asc</code></td><td class="n">5 156</td><td class="n">5 166</td><td class="n">40 ms</td><td class="n">1 ms</td></tr>
+  <tr><td>Q3</td><td><code>archive:cs</code> / <code>year desc,id asc</code></td><td class="n">7 999</td><td class="n">8 018</td><td class="n">52,5 ms</td><td class="n">2 ms</td></tr>
+</table>
+<p>W Q1 top-10 z filtrem i sortowaniem po roku kosztuje w SQL 289 ms. Planista musi pobrać z tabeli wszystkie 84 tys. dopasowań (bitmap heap scan), sprawdzić rok i posortować. Solr korzysta z filterCache dla <code>fq</code> i z docValues dla sortowania.</p>
+
+<h2>6. Ranking – top-10 w SQL i w Solrze</h2>
+<p>SQL: <code>ts_rank_cd(tsv, q, 1)</code> z domyślnymi wagami {D,C,B,A} = {0,1; 0,2; 0,4; 1,0} i normalizacją 1 (podział przez 1 + log długości dokumentu). Solr: eDisMax, <code>qf=title^2.5 abstract</code>, BM25. Waga 2,5 odpowiada stosunkowi wag A/B w PostgreSQL.</p>
+<table>
+  <tr><th>Zapyt.</th><th>Top-3 PostgreSQL (ts_rank_cd)</th><th>Top-3 Solr (eDisMax, BM25)</th><th class="n">wspólne w top-10</th><th class="n">czas SQL</th></tr>
+  <tr><td>Q1</td><td>1204.2232 Galaxy-galaxy(-galaxy) lensing as a sensitive probe…<br>0807.4932 Galaxy Clustering &amp; Galaxy-Galaxy Lensing…<br>astro-ph/0606447 Galaxy Galaxy Lensing as a Probe of Galaxy Dark Matter Halos</td>
+      <td>1204.2232 Galaxy-galaxy(-galaxy) lensing as a sensitive probe…<br>2111.11467 An inventory of galaxies in cosmic filaments…<br>astro-ph/0304203 Quasar-Galaxy and Galaxy-Galaxy Cross-Correlations…</td><td class="n">2 / 10</td><td class="n">365 ms</td></tr>
+  <tr><td>Q2</td><td>1804.04492 Stellar Velocity Dispersion: Linking Quiescent Galaxies…<br>1807.00879 Dynamical Imprint of Dark Matter Halo and Interstellar Gas…<br>1803.00767 Black Hole Space-time In Dark Matter Halo</td>
+      <td>0709.0434 Relaxed Dark Matter Halos<br>0711.0466 A Model for Dark Matter Halos<br>0812.2033 The Graininess of Dark Matter Haloes</td><td class="n">0 / 10</td><td class="n">72 ms</td></tr>
+  <tr><td>Q3</td><td>2002.09286 Efficient Trainable Front-Ends for Neural Speech Enhancement<br>1912.08771 Computationally Efficient Neural Image Compression<br>2108.01199 Neural Image Representations for Multi-Image Fusion…</td>
+      <td>2003.13217 Deep Residual Neural Networks for Image in Speech Steganography<br>2010.02636 Neural Speech Synthesis for Estonian<br>2106.15561 A Survey on Neural Speech Synthesis</td><td class="n">1 / 10</td><td class="n">104 ms</td></tr>
+</table>
+<p>Czas Solra (eDisMax, rows=10) wynosił 0 ms QTime z cache i ok. 3,5–4 ms po stronie klienta.</p>
+<div class="box"><b>Skąd tak małe pokrycie top-10?</b> Oba rankingi są poprawne, ale optymalizują co innego.
+<ul>
+<li><b>BM25 (Solr)</b> ma IDF i silną normalizację długości pola. Krótki tytuł zawierający całą frazę („Relaxed Dark Matter Halos”, 4 słowa) dostaje bardzo wysoką ocenę, a cała pierwsza dziesiątka Q2 ma identyczny score 20,9, czyli ten sam wzorzec „krótki tytuł = fraza”. Kolejność w obrębie remisu ustala <code>id asc</code>.</li>
+<li><b>ts_rank_cd (PG)</b> nie ma IDF i liczy „gęstość pokrycia”, czyli jak blisko siebie i jak często występują wyrazy zapytania. Normalizacja przez log długości jest słaba, więc wygrywają dokumenty, w których fraza występuje wielokrotnie w abstrakcie (1804.04492 powtarza „dark matter halo” w abstrakcie 10 razy), a nie tylko w tytule.</li>
+<li>Przy 84 tys. trafień (Q1) jest bardzo wiele dokumentów o niemal równej ocenie, więc nawet drobna różnica we wzorze zmienia skład top-10. Wspólne są dokumenty skrajne, np. 1204.2232, który ma „galaxy” 4× w tytule i wielokrotnie w abstrakcie.</li>
+<li>Ranking w PG jest kosztowny: <code>ts_rank_cd</code> trzeba policzyć dla <b>każdego</b> dopasowania, a GIN nie przechowuje pozycji, więc tsvector jest czytany z tabeli. Dla Q1 daje to 365 ms (84 tys. wierszy) wobec ok. 4 ms w Solrze, który liczy score w trakcie przechodzenia list postingów i trzyma top-k na kopcu.</li>
+</ul></div>
+
+<h2 class="pb">7. Agregacje: GROUP BY i facety</h2>
+<h3>7.1. GROUP BY po polu kategorycznym (poziom 4.0)</h3>
+<pre>SELECT archive, count(*) c FROM arxiv
+WHERE tsv @@ to_tsquery('english', 'neural &amp; (image | speech) &amp; !convolutional')
+GROUP BY archive ORDER BY c DESC;                                      -- 23,9 ms</pre>
+<table>
+  <tr><th>archive</th><th class="n">cs</th><th class="n">eess</th><th class="n">stat</th><th class="n">q-bio</th><th class="n">physics</th><th class="n">astro-ph</th></tr>
+  <tr><td>SQL GROUP BY</td><td class="n">7 999</td><td class="n">1 561</td><td class="n">306</td><td class="n">244</td><td class="n">234</td><td class="n">171</td></tr>
+  <tr><td>Solr facet.field (QTime 1 ms)</td><td class="n">8 018</td><td class="n">1 562</td><td class="n">306</td><td class="n">244</td><td class="n">235</td><td class="n">171</td></tr>
+</table>
+
+<h3>7.2. Facety kontra GROUP BY (poziom 5.0) – dla Q1 „galaxy”</h3>
+<p>Jedno zapytanie Solra z dwoma facetami polowymi i jednym zakresowym (kubełki 5-letnie):</p>
+<pre>/solr/arxiv/select?q=text:galaxy&amp;rows=0&amp;facet=true&amp;facet.field=archive&amp;facet.field=primary_category
+  &amp;facet.limit=10&amp;facet.mincount=1&amp;facet.range=year&amp;facet.range.start=1991&amp;facet.range.end=2026&amp;facet.range.gap=5</pre>
+<p>Odpowiedniki w SQL: trzy osobne zapytania <code>GROUP BY</code> (archive; primary_category; kubełek roku <code>1991 + ((year-1991)/5)*5</code>) oraz jedno zapytanie z <code>GROUPING SETS ((archive), (primary_category), (kubełek))</code>.</p>
+<table>
+  <tr><th>Wariant</th><th class="n">Czas (mediana z 5)</th></tr>
+  <tr><td>Solr: 2× facet.field + facet.range (jedno zapytanie)</td><td class="n"><b>3 ms</b> QTime (6,6 ms klient)</td></tr>
+  <tr><td>SQL: GROUP BY archive</td><td class="n">112,6 ms</td></tr>
+  <tr><td>SQL: GROUP BY primary_category</td><td class="n">106,3 ms</td></tr>
+  <tr><td>SQL: GROUP BY kubełek roku</td><td class="n">108,4 ms</td></tr>
+  <tr><td>SQL: suma trzech zapytań</td><td class="n"><b>327,4 ms</b></td></tr>
+  <tr><td>SQL: jedno zapytanie GROUPING SETS</td><td class="n"><b>129,0 ms</b></td></tr>
+</table>
+<table>
+  <tr><th>Kubełek roku</th><th class="n">1991</th><th class="n">1996</th><th class="n">2001</th><th class="n">2006</th><th class="n">2011</th><th class="n">2016</th><th class="n">2021</th></tr>
+  <tr><td>Solr facet.range</td><td class="n">1 372</td><td class="n">9 121</td><td class="n">13 357</td><td class="n">16 517</td><td class="n">18 732</td><td class="n">20 815</td><td class="n">4 215</td></tr>
+  <tr><td>SQL GROUP BY</td><td class="n">1 370</td><td class="n">9 117</td><td class="n">13 349</td><td class="n">16 509</td><td class="n">18 718</td><td class="n">20 795</td><td class="n">4 215</td></tr>
+</table>
+<table>
+  <tr><th>primary_category</th><th class="n">astro-ph</th><th class="n">astro-ph.GA</th><th class="n">astro-ph.CO</th><th class="n">astro-ph.HE</th><th class="n">astro-ph.SR</th><th class="n">astro-ph.IM</th><th class="n">gr-qc</th></tr>
+  <tr><td>Solr</td><td class="n">32 547</td><td class="n">22 247</td><td class="n">17 741</td><td class="n">5 504</td><td class="n">1 916</td><td class="n">1 361</td><td class="n">967</td></tr>
+  <tr><td>SQL</td><td class="n">32 530</td><td class="n">22 238</td><td class="n">17 724</td><td class="n">5 500</td><td class="n">1 914</td><td class="n">1 355</td><td class="n">967</td></tr>
+</table>
+<p>Wyniki są zgodne co do rozkładu. Różnice o kilka–kilkanaście dokumentów to dokładnie te 56 dodatkowych trafień Solra z rozdz. 5.1 (tokenizacja). Facety są ok. 40× szybsze od <code>GROUPING SETS</code> i ok. 100× od trzech osobnych zapytań. Solr liczy wszystkie facety w jednym przebiegu po zbiorze trafień (bitset), czytając wartości z kolumnowych docValues. PostgreSQL każde <code>GROUP BY</code> zaczyna od ponownego wykonania zapytania pełnotekstowego i pobrania 84 tys. wierszy z tabeli. <code>GROUPING SETS</code> pobiera je raz, stąd przyspieszenie 2,5×. Facet zakresowy w SQL wymaga ręcznego wyrażenia kubełka, a w Solrze to jeden parametr.</p>
+
+<h2>8. Podświetlanie trafień</h2>
+<p>Solr: <code>hl=true&amp;hl.fl=title,abstract&amp;hl.method=unified&amp;hl.fragsize=160</code>; PostgreSQL: <code>ts_headline('english', abstract, q, 'MaxWords=25, MinWords=10, MaxFragments=1')</code> dla top-3.</p>
+<table>
+  <tr><th>Zapyt.</th><th>Solr (unified highlighter)</th><th>PostgreSQL (ts_headline)</th></tr>
+  <tr><td>Q1</td><td class="snip">title: <b>Galaxy</b>-<b>galaxy</b>(-<b>galaxy</b>) lensing as a sensitive probe of <b>galaxy</b> evolution<br>abstract: …the mass environment of <b>galaxies</b>. We investigate how <b>galaxy</b>-<b>galaxy</b>(-<b>galaxy</b>) lensing…</td>
+      <td class="snip">…the mass environment of <b>galaxies</b>. We investigate how <b>galaxy</b>-<b>galaxy</b>(-<b>galaxy</b>) lensing can be used to test</td></tr>
+  <tr><td>Q2</td><td class="snip">title: Relaxed <b>Dark Matter Halos</b> (fraza zaznaczona jako całość)</td>
+      <td class="snip">…observational probe of <b>dark</b> <b>matter</b> <b>halo</b> velocity dispersion and mass. Stellar velocity dispersion is proportional to <b>dark</b></td></tr>
+  <tr><td>czas</td><td>Q1: 3 ms, Q2: 2 ms (QTime, top-3)</td><td>Q1: 332 ms, Q2: 69 ms (top-3 z rankingiem)</td></tr>
+</table>
+<p>Oba mechanizmy podświetlają formy odmienione (<i>galaxies</i>). Unified highlighter w Solrze podświetla frazę jako całość (dopasowanie zapytania, a nie pojedynczych słów) i obsługuje wiele pól naraz. <code>ts_headline</code> zaznacza pojedyncze słowa, także poza frazą (ostatnie „<b>dark</b>”). Musi też ponownie analizować pełny tekst dokumentu, dlatego stosujemy go tylko do top-k. Większość jego czasu to jednak ranking z rozdz. 6.</p>
+
+<h2 class="pb">9. Pomiary czasów zapytań</h2>
+<p><b>Metodyka:</b> te same dane (1 999 486 rekordów) i te same zapytania w obu systemach. Każde zapytanie jest wykonywane raz na rozgrzanie (nieliczone), a potem 5 razy, i podajemy medianę. W SQL mierzymy <code>Execution Time</code> z <code>EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)</code> oraz osobno czas klienta (psycopg). W Solrze mierzymy <code>QTime</code> i czas klienta (requests, HTTP keep-alive). Nie mierzyliśmy zimnego startu: wszystkie czasy dotyczą rozgrzanego cache stron (PG <code>shared_buffers</code> i cache plików systemu). Wszystkie surowe pomiary są w <code>results/*.json</code>.</p>
+<img src="../results/charts/query_times.png" style="width:72%">
+<div class="cap">Rys. 2. Czasy trzech zapytań na pełnym zbiorze (skala logarytmiczna). Q3 nie ma wariantu LIKE.</div>
+<p>LIKE wymaga pełnego skanu 4,1 GB tabeli (Parallel Seq Scan, 4 workery) i porównania podciągu w każdym abstrakcie, co daje ok. 4,2–4,9 s. Indeks GIN skraca to o dwa rzędy wielkości (19–81 ms). Czas FTS w PG rośnie z liczbą trafień: Q1 (84 tys.) jest wolniejsze od Q3 (10 tys.), bo bitmap heap scan i tak sprawdza (recheck) każdy znaleziony wiersz w tabeli. Solr bez cache wyników mieści się w 3–22 ms, a z cache odpowiada w 0–1 ms.</p>
+
+<h2>10. Skalowanie (10% / 50% / 100%)</h2>
+<table>
+  <tr><th>Rekordy</th><th>Zapyt.</th><th class="n">wyn. LIKE</th><th class="n">wyn. FTS</th><th class="n">numFound</th><th class="n">LIKE</th><th class="n">SQL FTS</th><th class="n">Solr (bez cache)</th><th class="n">Solr klient</th></tr>
+  <tr><td rowspan="3">199 875 (10%)</td><td>Q1</td><td class="n">6 106</td><td class="n">8 430</td><td class="n">8 438</td><td class="n">475 ms</td><td class="n">8,3 ms</td><td class="n">2 ms</td><td class="n">6,5 ms</td></tr>
+  <tr><td>Q2</td><td class="n">521</td><td class="n">555</td><td class="n">557</td><td class="n">623 ms</td><td class="n">4,8 ms</td><td class="n">4 ms</td><td class="n">9 ms</td></tr>
+  <tr><td>Q3</td><td class="n">–</td><td class="n">1 113</td><td class="n">1 116</td><td class="n">–</td><td class="n">2,5 ms</td><td class="n">4 ms</td><td class="n">8 ms</td></tr>
+  <tr><td rowspan="3">999 798 (50%)</td><td>Q1</td><td class="n">30 303</td><td class="n">42 023</td><td class="n">42 054</td><td class="n">2 599 ms</td><td class="n">43,2 ms</td><td class="n">2 ms</td><td class="n">5,7 ms</td></tr>
+  <tr><td>Q2</td><td class="n">2 573</td><td class="n">2 718</td><td class="n">2 724</td><td class="n">2 587 ms</td><td class="n">23,2 ms</td><td class="n">3 ms</td><td class="n">6,9 ms</td></tr>
+  <tr><td>Q3</td><td class="n">–</td><td class="n">5 494</td><td class="n">5 507</td><td class="n">–</td><td class="n">15,0 ms</td><td class="n">4 ms</td><td class="n">8,5 ms</td></tr>
+  <tr><td rowspan="3">1 999 486 (100%)</td><td>Q1</td><td class="n">60 580</td><td class="n">84 073</td><td class="n">84 129</td><td class="n">4 854 ms</td><td class="n">81,4 ms</td><td class="n">3 ms</td><td class="n">6,9 ms</td></tr>
+  <tr><td>Q2</td><td class="n">5 105</td><td class="n">5 413</td><td class="n">5 423</td><td class="n">4 233 ms</td><td class="n">38,3 ms</td><td class="n">9 ms</td><td class="n">14 ms</td></tr>
+  <tr><td>Q3</td><td class="n">–</td><td class="n">10 692</td><td class="n">10 713</td><td class="n">–</td><td class="n">19,0 ms</td><td class="n">22 ms</td><td class="n">26 ms</td></tr>
+</table>
+<img src="../results/charts/scaling.png">
+<div class="cap">Rys. 3. Skalowanie czasu zapytań z wielkością zbioru (skala logarytmiczna).</div>
+<div class="box"><b>Wniosek – kiedy który sposób przestaje wystarczać:</b>
+<ul>
+<li><b>LIKE</b> rośnie liniowo z rozmiarem tabeli (~2,4 ms na 1 000 rekordów). Już przy 200 tys. rekordów zajmuje pół sekundy, a przy 1 mln ok. 2,6 s. Do interaktywnego wyszukiwania (budżet ~100–200 ms) nie nadaje się już przy ~50–100 tys. rekordów z długim tekstem. Do tego zwraca o ~28% mniej trafnych wyników, bo nie zna odmiany.</li>
+<li><b>PostgreSQL FTS (GIN)</b> rośnie mniej więcej liniowo z <i>liczbą trafień</i> (8 → 43 → 81 ms dla Q1). Przy 2 mln rekordów wszystkie trzy zapytania mieszczą się poniżej 100 ms, więc do samego filtrowania i liczenia indeks w bazie wystarcza. Granica pojawia się przy rankingu (365 ms), agregacjach (100–330 ms) i podświetlaniu (330 ms). Każde z nich wymaga odczytu wszystkich dopasowanych wierszy z tabeli. Przy ~10 mln rekordów lub zapytaniach z setkami tysięcy trafień PG przekroczyłby sekundę.</li>
+<li><b>Solr</b> praktycznie nie zależy od wielkości zbioru w tym zakresie (2–9 ms dla Q1/Q2). Dla Q3 (alternatywa + negacja na częstych termach) widać wzrost do ~22 ms, wciąż daleko od granicy interaktywności. Narzut HTTP i JSON (~4 ms) jest większy niż samo wyszukiwanie.</li>
+</ul></div>
+
+<h2 class="pb">11. Rozszerzenia</h2>
+<p>Zrealizowaliśmy cztery rozszerzenia, choć wymagane są trzy (1 na 4.0 i 2 na 5.0): <b>E1</b> synonimy przez REST, <b>E2</b> odporność na literówki (fuzzy kontra LIKE/pg_trgm), <b>E3</b> głębokie stronicowanie (start/rows kontra cursorMark), <b>E4</b> własny typ pola z zakładką Analysis kontra <code>to_tsvector</code>.</p>
+
+<h3>11.1. E1 – synonimy zarządzane przez REST</h3>
+<p>Typ <code>text_en_lab</code> ma po stronie zapytania filtr <code>ManagedSynonymGraphFilterFactory</code> (zasób <code>english</code>). Grupy dodajemy żądaniami REST, a potem przeładowujemy kolekcję. Indeks się nie zmienia, bo synonimy działają tylko w zapytaniu:</p>
+<pre>PUT http://localhost:8983/solr/arxiv/schema/analysis/synonyms/english
+    ["cnn", "convolutional neural network"]      (oraz 3 kolejne grupy)
+GET http://localhost:8983/solr/admin/collections?action=RELOAD&amp;name=arxiv</pre>
+<table>
+  <tr><th>Grupa synonimów</th><th>Zapytanie</th><th class="n">przed</th><th class="n">po</th><th class="n">SQL: ręczny OR (<code>a | b&lt;-&gt;c</code>)</th></tr>
+  <tr><td rowspan="2">cnn ⇔ convolutional neural network</td><td>cnn</td><td class="n">10 601</td><td class="n">22 420</td><td class="n" rowspan="2">19 357</td></tr>
+  <tr><td>"convolutional neural network"</td><td class="n">15 852</td><td class="n">19 541</td></tr>
+  <tr><td rowspan="2">gw ⇔ gravitational wave</td><td>gw</td><td class="n">4 022</td><td class="n">19 218</td><td class="n" rowspan="2">16 621</td></tr>
+  <tr><td>"gravitational wave"</td><td class="n">15 101</td><td class="n">16 714</td></tr>
+  <tr><td rowspan="2">qcd ⇔ quantum chromodynamics</td><td>qcd</td><td class="n">39 276</td><td class="n">40 463</td><td class="n" rowspan="2">40 298</td></tr>
+  <tr><td>"quantum chromodynamics"</td><td class="n">2 478</td><td class="n">40 448</td></tr>
+  <tr><td rowspan="2">bec ⇔ bose einstein condensate</td><td>bec</td><td class="n">3 821</td><td class="n">11 369</td><td class="n" rowspan="2">11 222</td></tr>
+  <tr><td>"bose einstein condensate"</td><td class="n">9 874</td><td class="n">11 237</td></tr>
+</table>
+<p>Po dodaniu synonimów zapytanie o skrót i o pełną nazwę zwraca (prawie) ten sam zbiór. Najmocniej widać to dla „quantum chromodynamics” (2,5 tys. → 40 tys.), bo autorzy niemal zawsze piszą „QCD”. Zapytanie jednowyrazowe (<code>cnn</code>) rozwija się do <code>cnn OR (convolut AND neural AND network)</code> bez wymogu sąsiedztwa, stąd nieco więcej wyników niż dla frazy. Wynik jest bliski ręcznie napisanemu w SQL <code>to_tsquery('cnn | convolutional&lt;-&gt;neural&lt;-&gt;network')</code>. Słownik synonimów można też podpiąć w PostgreSQL (<code>CREATE TEXT SEARCH DICTIONARY … TEMPLATE=thesaurus</code>), ale wymaga to pliku na serwerze bazy i przebudowy kolumny tsvector, a REST API Solra zmienia słownik bez reindeksacji.</p>
+
+<h3>11.2. E2 – odporność na literówki: fuzzy (~) kontra LIKE / pg_trgm</h3>
+<p>Wyszukiwanie w tytułach z celowym błędem. Solr: <code>title:galxy~2</code> (odległość edycyjna ≤ 2). LIKE: <code>title ILIKE '%galxy%'</code>. pg_trgm: <code>'galxy' &lt;% title</code> (word_similarity ≥ 0,6, indeks GIN trigram).</p>
+<table>
+  <tr><th>Literówka (poprawnie)</th><th class="n">Solr ~2</th><th class="n">QTime</th><th class="n">Solr poprawne słowo</th><th class="n">LIKE</th><th class="n">pg_trgm</th><th class="n">czas pg_trgm</th></tr>
+  <tr><td>galxy (galaxy)</td><td class="n">40 726</td><td class="n">0–1 ms</td><td class="n">38 271</td><td class="n">0</td><td class="n">160</td><td class="n">186 ms</td></tr>
+  <tr><td>quantim (quantum)</td><td class="n">120 180</td><td class="n">1 ms</td><td class="n">104 030</td><td class="n">0</td><td class="n">119 152</td><td class="n">1 295 ms</td></tr>
+  <tr><td>superconductvity (superconductivity)</td><td class="n">2</td><td class="n">1 ms</td><td class="n">15 223</td><td class="n">0</td><td class="n">25 879</td><td class="n">409 ms</td></tr>
+</table>
+<ul>
+<li><b>LIKE</b> nie radzi sobie z literówkami (0 wyników). Dzięki indeksowi trigramowemu <code>ILIKE</code> był za to błyskawiczny (0,05–24 ms): GIN trgm obsługuje też <code>LIKE '%…%'</code>.</li>
+<li><b>Solr fuzzy</b> działa na słowniku termów (automat Levenshteina), więc niezależnie od rozmiaru zbioru zajmuje ~1 ms. <i>galxy~2</i> trafia w <i>galaxi</i> (rdzeń po stemmingu, odległość 2), ale też w <i>gala</i>, <i>galex</i>, więc precyzja spada. Pułapka: zapytania fuzzy <b>nie są stemowane</b>. <i>superconductvity</i> jest odległe o więcej niż 2 od zaindeksowanego rdzenia <i>superconduct</i>, więc znalazło tylko 2 tytuły z… autentycznymi literówkami („Superconductiviy”, „Superconductivty”).</li>
+<li><b>pg_trgm</b> porównuje zbiory trygramów, co lepiej znosi długie słowa (superconductvity: 25 879), ale gorzej krótkie (galxy ma mało wspólnych trygramów z galaxy: tylko 160 trafień przy progu 0,6). Jest też 100–1000× wolniejsze od Solra: każde trafienie z indeksu trzeba ponownie sprawdzić funkcją <code>word_similarity</code> na tekście z tabeli.</li>
+</ul>
+
+<h3>11.3. E3 – głębokie stronicowanie: start/rows kontra cursorMark</h3>
+<p>Zapytanie <code>q=*:*&amp;sort=id asc&amp;rows=20</code>, czyli strona 20 wyników na coraz większej głębokości. Dla porównania: SQL <code>OFFSET n LIMIT 20</code> oraz keyset <code>WHERE id &gt; :ostatni ORDER BY id LIMIT 20</code>.</p>
+<table>
+  <tr><th>Głębokość</th><th class="n">0</th><th class="n">1 000</th><th class="n">10 000</th><th class="n">100 000</th><th class="n">500 000</th><th class="n">1 000 000</th></tr>
+  <tr><td>Solr start/rows (QTime)</td><td class="n">1 ms</td><td class="n">32 ms</td><td class="n">83 ms</td><td class="n">467 ms</td><td class="n">3 588 ms</td><td class="n">5 348 ms</td></tr>
+  <tr><td>Solr cursorMark (QTime)</td><td class="n">22 ms</td><td class="n">21 ms</td><td class="n">22 ms</td><td class="n">24 ms</td><td class="n">28 ms</td><td class="n">31 ms</td></tr>
+  <tr><td>SQL OFFSET</td><td class="n">0,03 ms</td><td class="n">0,11 ms</td><td class="n">0,97 ms</td><td class="n">9,9 ms</td><td class="n">54 ms</td><td class="n">98 ms</td></tr>
+  <tr><td>SQL keyset</td><td class="n">0,02 ms</td><td class="n">0,02 ms</td><td class="n">0,02 ms</td><td class="n">0,03 ms</td><td class="n">0,02 ms</td><td class="n">0,03 ms</td></tr>
+</table>
+<img src="../results/charts/paging.png" style="width:70%">
+<div class="cap">Rys. 4. Czas pobrania jednej strony w zależności od głębokości.</div>
+<p>Przy <code>start=1000000</code> Solr musi utrzymać kolejkę priorytetową start+rows = 1 000 020 elementów i posortować wszystkie dokumenty, co daje 5,3 s i duże zużycie sterty. <code>cursorMark</code> pamięta wartość sortowania ostatniego dokumentu, więc każda strona kosztuje tyle samo (~20–30 ms) niezależnie od głębokości. To mechanizm analogiczny do keyset pagination w SQL. Przejście kursorem przez pierwsze 1 mln dokumentów (paczkami po 10 000) zajęło 11,2 s. PostgreSQL wypada tu lepiej, bo stronicowanie po kluczu głównym czyta kolejne wpisy B-drzewa. <code>OFFSET</code> jest liniowy, ale tani (98 ms przy 1 mln), a keyset ma stały czas ~0,02 ms.</p>
+
+<h3>11.4. E4 – własny łańcuch analizy (Analysis) kontra <code>to_tsvector</code></h3>
+<p>Wynik zakładki Analysis (<code>/solr/arxiv/analysis/field?analysis.fieldtype=text_en_lab</code>) po ostatnim filtrze łańcucha indeksującego, w porównaniu z <code>to_tsvector('english', …)</code>:</p>
+<table>
+  <tr><th>Zdanie</th><th>Solr text_en_lab</th><th>PostgreSQL to_tsvector('english')</th></tr>
+  <tr><td>The galaxies' rotation curves were measured using running averages.</td><td><code>galaxi rotat curv <b class="hl">were</b> measur use run averag</code></td><td><code>'averag':9 'curv':4 'galaxi':2 'measur':6 'rotat':3 'run':8 'use':7</code></td></tr>
+  <tr><td>We studied Bose-Einstein condensates of ultracold atoms in optical lattices.</td><td><code><b class="hl">we</b> studi bose einstein condens ultracold atom optic lattic</code></td><td><code>'atom':9 'bose':4 <b class="hl">'bose-einstein':3</b> 'condens':6 'einstein':5 'lattic':12 'optic':11 'studi':2 'ultracold':8</code></td></tr>
+  <tr><td>Convolutional neural networks are not the only models for image classification.</td><td><code>convolut neural network <b class="hl">onli</b> model imag classif</code></td><td><code>'classif':11 'convolut':1 'imag':10 'model':8 'network':3 'neural':2</code></td></tr>
+</table>
+<ul>
+<li>Rdzenie są identyczne (Snowball English w obu systemach), a <code>EnglishPossessive</code> usuwa <i>'s</i>/<i>'</i>, podobnie jak parser PG.</li>
+<li><b>Stoplisty:</b> PG usuwa <i>were</i>, <i>we</i>, <i>only</i> (127 słów), Solr nie (35 słów). W Solrze takie słowa zwiększają indeks, ale pozwalają szukać fraz z ich udziałem.</li>
+<li><b>Słowa złożone:</b> PG dla <i>Bose-Einstein</i> zapisuje dodatkowo token złożony <code>bose-einstein</code>, który zajmuje osobną pozycję (3), więc części mają pozycje 4–5. StandardTokenizer tnie myślnik bez tokenu złożonego. To ten sam mechanizm, który daje różnicę 10 dokumentów we frazie Q2.</li>
+<li>PG przechowuje pozycje bezpośrednio w <code>tsvector</code> (widoczne <code>:n</code>), a Lucene trzyma je w listach postingów indeksu.</li>
+</ul>
+
+<h2>12. Wnioski</h2>
+<div class="box">
+<ul>
+<li><b>LIKE nie jest wyszukiwaniem pełnotekstowym.</b> Na 2 mln rekordów (2 GB tekstu) odpowiada w 4–5 s, a czas rośnie liniowo. Do tego nie zna odmiany (−28% trafień dla „galaxy”). Akceptowalny jest tylko dla małych tabel (≲ 50 tys. rekordów) lub dla dopasowań prefiksowych/podciągowych wspieranych indeksem trigramowym.</li>
+<li><b>Indeks pełnotekstowy w PostgreSQL wystarcza</b>, gdy potrzebujemy wyszukiwania z odmianą, frazami i logiką w danych, które i tak są w bazie, do kilku milionów rekordów i przy umiarkowanej liczbie trafień. Dostajemy 19–81 ms na 2 mln rekordów, transakcyjną spójność (tsvector jako kolumna GENERATED), brak dodatkowej infrastruktury i natychmiastową widoczność zmian. Liczności są niemal identyczne jak w Solrze (różnice ~0,1% wynikają z tokenizacji).</li>
+<li><b>Po Solra warto sięgnąć</b>, gdy wyszukiwarka to funkcja dla użytkownika, a nie tylko filtr. Według naszych pomiarów:
+  ranking BM25 top-10 kosztuje ~4 ms zamiast 72–365 ms (<code>ts_rank_cd</code>); facety z facetem zakresowym 3 ms zamiast 129–327 ms (GROUPING SETS / 3× GROUP BY); podświetlanie 2–3 ms zamiast 69–332 ms; wyszukiwanie z literówkami ~1 ms zamiast 0,2–1,3 s (pg_trgm); a czas zapytań praktycznie nie rośnie z wielkością zbioru. Do tego dochodzą funkcje, których baza nie ma lub ma w ograniczonej formie: eDisMax z wagami pól, synonimy zmieniane przez REST bez reindeksacji, cursorMark, zakładka Analysis.</li>
+<li><b>Koszty Solra:</b> osobna usługa (3 GB sterty), drugi egzemplarz danych do synchronizacji (brak transakcji z bazą), widoczność zmian dopiero po commicie, inne zachowanie w szczegółach (tokenizacja, stoplisty, ranking dający zupełnie inne top-10). Głębokie stronicowanie <code>start/rows</code> jest w Solrze bardzo kosztowne (5,3 s przy 1 mln), więc trzeba używać <code>cursorMark</code>.</li>
+<li><b>Granica na naszym sprzęcie:</b> do ~1–2 mln dokumentów i prostych list wyników PostgreSQL FTS jest wystarczający. Gdy zapytania zwracają dziesiątki tysięcy trafień, które trzeba rankingować, agregować w facety i podświetlać przy każdym żądaniu, PG przekracza 100–300 ms na pojedynczą funkcję, a Solr obsługuje wszystkie naraz w jednym żądaniu w kilka milisekund.</li>
+</ul></div>
+
+</body>
+</html>

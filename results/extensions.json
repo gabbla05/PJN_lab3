@@ -1,0 +1,932 @@
+{
+  "synonyms": {
+    "groups": {
+      "cnn": [
+        "cnn",
+        "convolutional neural network"
+      ],
+      "gw": [
+        "gw",
+        "gravitational wave"
+      ],
+      "qcd": [
+        "qcd",
+        "quantum chromodynamics"
+      ],
+      "bec": [
+        "bec",
+        "bose einstein condensate"
+      ]
+    },
+    "managed_map": {
+      "bec": [
+        "bec",
+        "bose einstein condensate"
+      ],
+      "bose einstein condensate": [
+        "bec",
+        "bose einstein condensate"
+      ],
+      "cnn": [
+        "cnn",
+        "convolutional neural network"
+      ],
+      "convolutional neural network": [
+        "cnn",
+        "convolutional neural network"
+      ],
+      "gravitational wave": [
+        "gravitational wave",
+        "gw"
+      ],
+      "gw": [
+        "gravitational wave",
+        "gw"
+      ],
+      "qcd": [
+        "qcd",
+        "quantum chromodynamics"
+      ],
+      "quantum chromodynamics": [
+        "qcd",
+        "quantum chromodynamics"
+      ]
+    },
+    "before": {
+      "cnn": {
+        "cnn": 10601,
+        "convolutional neural network": 15852
+      },
+      "gw": {
+        "gw": 4022,
+        "gravitational wave": 15101
+      },
+      "qcd": {
+        "qcd": 39276,
+        "quantum chromodynamics": 2478
+      },
+      "bec": {
+        "bec": 3821,
+        "bose einstein condensate": 9874
+      }
+    },
+    "after": {
+      "cnn": {
+        "cnn": 22420,
+        "convolutional neural network": 19541
+      },
+      "gw": {
+        "gw": 19218,
+        "gravitational wave": 16714
+      },
+      "qcd": {
+        "qcd": 40463,
+        "quantum chromodynamics": 40448
+      },
+      "bec": {
+        "bec": 11369,
+        "bose einstein condensate": 11237
+      }
+    },
+    "pg_or_equivalent": {
+      "cnn": {
+        "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ to_tsquery('english', '(cnn) | (convolutional <-> neural <-> network)')",
+        "count": 19357
+      },
+      "gw": {
+        "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ to_tsquery('english', '(gw) | (gravitational <-> wave)')",
+        "count": 16621
+      },
+      "qcd": {
+        "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ to_tsquery('english', '(qcd) | (quantum <-> chromodynamics)')",
+        "count": 40298
+      },
+      "bec": {
+        "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ to_tsquery('english', '(bec) | (bose <-> einstein <-> condensate)')",
+        "count": 11222
+      }
+    },
+    "rest_calls": [
+      "PUT http://localhost:8983/solr/arxiv/schema/analysis/synonyms/english  body: [\"cnn\", \"convolutional neural network\"]  (x4 grupy)",
+      "GET http://localhost:8983/solr/admin/collections?action=RELOAD&name=arxiv"
+    ]
+  },
+  "fuzzy": {
+    "galxy": {
+      "correct": "galaxy",
+      "solr_fuzzy": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=title%3Agalxy~2&fl=id%2Ctitle&rows=3",
+        "numFound": 40726,
+        "qtime_ms": 0,
+        "client_ms": 4.1,
+        "qtime_all_ms": [
+          1,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "solr_fuzzy_top": [
+        {
+          "id": "astro-ph/0503560",
+          "title": "GALEX: Galaxy Evolution Explorer"
+        },
+        {
+          "id": "astro-ph/0203361",
+          "title": "Are high-redshift DLA galxies Lyman-break galaxies?"
+        },
+        {
+          "id": "0801.2328",
+          "title": "The GALEX UV emission in shell galaxies"
+        }
+      ],
+      "solr_exact_correct": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=title%3Agalaxy&rows=0",
+        "numFound": 38271,
+        "qtime_ms": 0,
+        "client_ms": 3.25,
+        "qtime_all_ms": [
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      },
+      "like": {
+        "sql": "SELECT count(*) FROM arxiv WHERE title ILIKE '%galxy%'",
+        "result": 0,
+        "rows": null,
+        "server_ms": 0.05,
+        "client_ms": 0.75,
+        "server_all_ms": [
+          0.06,
+          0.06,
+          0.04,
+          0.04,
+          0.05
+        ]
+      },
+      "pg_trgm": {
+        "sql": "SELECT count(*) FROM arxiv WHERE 'galxy' <% title",
+        "result": 160,
+        "rows": null,
+        "server_ms": 185.78,
+        "client_ms": 200.05,
+        "server_all_ms": [
+          185.78,
+          196.88,
+          187.23,
+          180.16,
+          185.2
+        ]
+      },
+      "pg_trgm_top": [
+        [
+          "0707.0066",
+          "First detection of galaxy-galaxy-galaxy lensing in RCS. A new tool for studying the matter environment of galaxy pairs",
+          0.6666667
+        ],
+        [
+          "0707.1698",
+          "The Masses and Shapes of Dark Matter Halos from Galaxy-Galaxy Lensing in the CFHTLS",
+          0.6666667
+        ],
+        [
+          "0709.1692",
+          "Precision photometric redshift calibration for galaxy-galaxy weak lensing",
+          0.6666667
+        ]
+      ]
+    },
+    "quantim": {
+      "correct": "quantum",
+      "solr_fuzzy": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=title%3Aquantim~2&fl=id%2Ctitle&rows=3",
+        "numFound": 120180,
+        "qtime_ms": 1,
+        "client_ms": 3.63,
+        "qtime_all_ms": [
+          0,
+          1,
+          4,
+          0,
+          1
+        ]
+      },
+      "solr_fuzzy_top": [
+        {
+          "id": "0712.3887",
+          "title": "QuanTree and QuanLin, Two Special Purpose Quantum Compilers"
+        },
+        {
+          "id": "1002.2158",
+          "title": "Quantifying Quantumness and the Quest for Queens of Quantum"
+        },
+        {
+          "id": "1004.1944",
+          "title": "Convex ordering and quantification of quantumness"
+        }
+      ],
+      "solr_exact_correct": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=title%3Aquantum&rows=0",
+        "numFound": 104030,
+        "qtime_ms": 0,
+        "client_ms": 4.15,
+        "qtime_all_ms": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "like": {
+        "sql": "SELECT count(*) FROM arxiv WHERE title ILIKE '%quantim%'",
+        "result": 0,
+        "rows": null,
+        "server_ms": 23.57,
+        "client_ms": 25.49,
+        "server_all_ms": [
+          23.62,
+          19.83,
+          24.1,
+          23.1,
+          23.57
+        ]
+      },
+      "pg_trgm": {
+        "sql": "SELECT count(*) FROM arxiv WHERE 'quantim' <% title",
+        "result": 119152,
+        "rows": null,
+        "server_ms": 1294.75,
+        "client_ms": 1294.35,
+        "server_all_ms": [
+          1260.89,
+          1264.87,
+          1444.54,
+          1294.75,
+          1327.87
+        ]
+      },
+      "pg_trgm_top": [
+        [
+          "1910.12828",
+          "Blind Robust 3-D Mesh Watermarking based on Mesh Saliency and QIM quantization for Copyright Protection",
+          0.875
+        ],
+        [
+          "0704.0217",
+          "Capacity of a Multiple-Antenna Fading Channel with a Quantized Precoding Matrix",
+          0.75
+        ],
+        [
+          "0704.0429",
+          "Quantitative Resolution to some \"Absolute Discrepancies\" in Cancer Theories: a View from Phage lambda Genetic Switch",
+          0.75
+        ]
+      ]
+    },
+    "superconductvity": {
+      "correct": "superconductivity",
+      "solr_fuzzy": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=title%3Asuperconductvity~2&fl=id%2Ctitle&rows=3",
+        "numFound": 2,
+        "qtime_ms": 1,
+        "client_ms": 3.44,
+        "qtime_all_ms": [
+          1,
+          0,
+          1,
+          0,
+          1
+        ]
+      },
+      "solr_fuzzy_top": [
+        {
+          "id": "0906.4656",
+          "title": "Rattling-Induced Superconductiviy in the Beta-Pyrochlore Oxides AOs2O6"
+        },
+        {
+          "id": "cond-mat/0311354",
+          "title": "Superconductivty without inversion symmetry: MnSi versus CePt_3Si"
+        }
+      ],
+      "solr_exact_correct": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=title%3Asuperconductivity&rows=0",
+        "numFound": 15223,
+        "qtime_ms": 0,
+        "client_ms": 3.22,
+        "qtime_all_ms": [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      },
+      "like": {
+        "sql": "SELECT count(*) FROM arxiv WHERE title ILIKE '%superconductvity%'",
+        "result": 0,
+        "rows": null,
+        "server_ms": 1.85,
+        "client_ms": 3.12,
+        "server_all_ms": [
+          1.82,
+          1.84,
+          1.85,
+          1.85,
+          1.94
+        ]
+      },
+      "pg_trgm": {
+        "sql": "SELECT count(*) FROM arxiv WHERE 'superconductvity' <% title",
+        "result": 25879,
+        "rows": null,
+        "server_ms": 408.77,
+        "client_ms": 436.92,
+        "server_all_ms": [
+          464.45,
+          401.89,
+          404.07,
+          408.77,
+          422.06
+        ]
+      },
+      "pg_trgm_top": [
+        [
+          "0908.2747",
+          "Conditions for stimulated emission in anomalous gravity-superconductors interactions",
+          0.88235295
+        ],
+        [
+          "1408.1636",
+          "Gravity-Superconductors Interactions as a Possible Means to Exchange Momentum with the Vacuum",
+          0.88235295
+        ],
+        [
+          "1807.06601",
+          "Cavity superconductor-polaritons",
+          0.88235295
+        ]
+      ]
+    }
+  },
+  "paging": {
+    "rows": 20,
+    "start_rows": {
+      "0": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&start=0",
+        "numFound": 1999486,
+        "qtime_ms": 1,
+        "client_ms": 4.49,
+        "qtime_all_ms": [
+          1,
+          0,
+          1,
+          0,
+          1
+        ]
+      },
+      "1000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&start=1000",
+        "numFound": 1999486,
+        "qtime_ms": 32,
+        "client_ms": 37.57,
+        "qtime_all_ms": [
+          27,
+          26,
+          69,
+          32,
+          44
+        ]
+      },
+      "10000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&start=10000",
+        "numFound": 1999486,
+        "qtime_ms": 83,
+        "client_ms": 88.07,
+        "qtime_all_ms": [
+          73,
+          82,
+          83,
+          85,
+          85
+        ]
+      },
+      "100000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&start=100000",
+        "numFound": 1999486,
+        "qtime_ms": 467,
+        "client_ms": 480.96,
+        "qtime_all_ms": [
+          521,
+          467,
+          460,
+          427,
+          733
+        ]
+      },
+      "500000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&start=500000",
+        "numFound": 1999486,
+        "qtime_ms": 3588,
+        "client_ms": 3672.84,
+        "qtime_all_ms": [
+          2734,
+          2927,
+          4084,
+          4895,
+          3588
+        ]
+      },
+      "1000000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&start=1000000",
+        "numFound": 1999486,
+        "qtime_ms": 5348,
+        "client_ms": 5480.55,
+        "qtime_all_ms": [
+          5348,
+          5574,
+          5073,
+          11060,
+          4109
+        ]
+      }
+    },
+    "cursor": {
+      "0": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&cursorMark=%2A",
+        "numFound": 1999486,
+        "qtime_ms": 22,
+        "client_ms": 25.33,
+        "qtime_all_ms": [
+          23,
+          22,
+          22,
+          21,
+          22
+        ]
+      },
+      "1000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&cursorMark=AoEpMDcwNC4xMDAw",
+        "numFound": 1999486,
+        "qtime_ms": 21,
+        "client_ms": 26.26,
+        "qtime_all_ms": [
+          22,
+          23,
+          21,
+          21,
+          20
+        ]
+      },
+      "10000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&cursorMark=AoEpMDcwNi4xMzEz",
+        "numFound": 1999486,
+        "qtime_ms": 22,
+        "client_ms": 25.26,
+        "qtime_all_ms": [
+          21,
+          22,
+          22,
+          22,
+          30
+        ]
+      },
+      "100000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&cursorMark=AoEpMDgxMi4zODcz",
+        "numFound": 1999486,
+        "qtime_ms": 24,
+        "client_ms": 27.32,
+        "qtime_all_ms": [
+          24,
+          23,
+          26,
+          24,
+          22
+        ]
+      },
+      "500000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&cursorMark=AoEpMTQwMi4yNDc0",
+        "numFound": 1999486,
+        "qtime_ms": 28,
+        "client_ms": 31.76,
+        "qtime_all_ms": [
+          25,
+          24,
+          32,
+          49,
+          28
+        ]
+      },
+      "1000000": {
+        "url": "http://localhost:8983/solr/arxiv/select?q=%2A%3A%2A&sort=id+asc&fl=id&rows=20&cursorMark=AoEqMTgwNy4wMjc5MQ%3D%3D",
+        "numFound": 1999486,
+        "qtime_ms": 31,
+        "client_ms": 34.73,
+        "qtime_all_ms": [
+          31,
+          29,
+          31,
+          30,
+          33
+        ]
+      }
+    },
+    "pg_offset": {
+      "0": {
+        "sql": "SELECT id FROM arxiv ORDER BY id OFFSET 0 LIMIT 20",
+        "result": 20,
+        "server_ms": 0.03,
+        "client_ms": 0.69,
+        "server_all_ms": [
+          0.03,
+          0.02,
+          0.04,
+          0.02,
+          0.03
+        ]
+      },
+      "1000": {
+        "sql": "SELECT id FROM arxiv ORDER BY id OFFSET 1000 LIMIT 20",
+        "result": 20,
+        "server_ms": 0.11,
+        "client_ms": 0.71,
+        "server_all_ms": [
+          0.1,
+          0.11,
+          0.12,
+          0.11,
+          0.1
+        ]
+      },
+      "10000": {
+        "sql": "SELECT id FROM arxiv ORDER BY id OFFSET 10000 LIMIT 20",
+        "result": 20,
+        "server_ms": 0.97,
+        "client_ms": 1.23,
+        "server_all_ms": [
+          0.98,
+          0.97,
+          0.95,
+          1.41,
+          0.9
+        ]
+      },
+      "100000": {
+        "sql": "SELECT id FROM arxiv ORDER BY id OFFSET 100000 LIMIT 20",
+        "result": 20,
+        "server_ms": 9.86,
+        "client_ms": 5.36,
+        "server_all_ms": [
+          9.13,
+          9.86,
+          13.64,
+          9.49,
+          10.21
+        ]
+      },
+      "500000": {
+        "sql": "SELECT id FROM arxiv ORDER BY id OFFSET 500000 LIMIT 20",
+        "result": 20,
+        "server_ms": 54.12,
+        "client_ms": 29.56,
+        "server_all_ms": [
+          49.92,
+          60.91,
+          56.28,
+          54.12,
+          47.7
+        ]
+      },
+      "1000000": {
+        "sql": "SELECT id FROM arxiv ORDER BY id OFFSET 1000000 LIMIT 20",
+        "result": 20,
+        "server_ms": 97.79,
+        "client_ms": 47.6,
+        "server_all_ms": [
+          97.79,
+          102.53,
+          96.31,
+          94.03,
+          103.22
+        ]
+      }
+    },
+    "pg_keyset": {
+      "0": {
+        "sql": "SELECT id FROM arxiv ORDER BY id LIMIT 20",
+        "result": 20,
+        "server_ms": 0.02,
+        "client_ms": 0.74,
+        "server_all_ms": [
+          0.02,
+          0.02,
+          0.03,
+          0.02,
+          0.02
+        ]
+      },
+      "1000": {
+        "sql": "SELECT id FROM arxiv WHERE id > '0704.1000' ORDER BY id LIMIT 20",
+        "result": 20,
+        "server_ms": 0.02,
+        "client_ms": 0.78,
+        "server_all_ms": [
+          0.02,
+          0.02,
+          0.07,
+          0.02,
+          0.02
+        ]
+      },
+      "10000": {
+        "sql": "SELECT id FROM arxiv WHERE id > '0706.1313' ORDER BY id LIMIT 20",
+        "result": 20,
+        "server_ms": 0.02,
+        "client_ms": 0.91,
+        "server_all_ms": [
+          0.02,
+          0.02,
+          0.03,
+          0.02,
+          0.02
+        ]
+      },
+      "100000": {
+        "sql": "SELECT id FROM arxiv WHERE id > '0812.3873' ORDER BY id LIMIT 20",
+        "result": 20,
+        "server_ms": 0.03,
+        "client_ms": 0.66,
+        "server_all_ms": [
+          0.03,
+          0.03,
+          0.03,
+          0.03,
+          0.04
+        ]
+      },
+      "500000": {
+        "sql": "SELECT id FROM arxiv WHERE id > '1402.2474' ORDER BY id LIMIT 20",
+        "result": 20,
+        "server_ms": 0.02,
+        "client_ms": 0.63,
+        "server_all_ms": [
+          0.03,
+          0.02,
+          0.02,
+          0.02,
+          0.03
+        ]
+      },
+      "1000000": {
+        "sql": "SELECT id FROM arxiv WHERE id > '1807.02791' ORDER BY id LIMIT 20",
+        "result": 20,
+        "server_ms": 0.03,
+        "client_ms": 0.71,
+        "server_all_ms": [
+          0.03,
+          0.03,
+          0.03,
+          0.04,
+          0.04
+        ]
+      }
+    },
+    "cursor_walk_to_1M_s": 11.2
+  },
+  "analysis": [
+    {
+      "sentence": "The galaxies' rotation curves were measured using running averages.",
+      "solr_stages": [
+        {
+          "stage": "StandardTokenizer",
+          "tokens": [
+            "The",
+            "galaxies",
+            "rotation",
+            "curves",
+            "were",
+            "measured",
+            "using",
+            "running",
+            "averages"
+          ]
+        },
+        {
+          "stage": "LowerCaseFilter",
+          "tokens": [
+            "the",
+            "galaxies",
+            "rotation",
+            "curves",
+            "were",
+            "measured",
+            "using",
+            "running",
+            "averages"
+          ]
+        },
+        {
+          "stage": "StopFilter",
+          "tokens": [
+            "galaxies",
+            "rotation",
+            "curves",
+            "were",
+            "measured",
+            "using",
+            "running",
+            "averages"
+          ]
+        },
+        {
+          "stage": "EnglishPossessiveFilter",
+          "tokens": [
+            "galaxies",
+            "rotation",
+            "curves",
+            "were",
+            "measured",
+            "using",
+            "running",
+            "averages"
+          ]
+        },
+        {
+          "stage": "SnowballFilter",
+          "tokens": [
+            "galaxi",
+            "rotat",
+            "curv",
+            "were",
+            "measur",
+            "use",
+            "run",
+            "averag"
+          ]
+        }
+      ],
+      "pg_english": "'averag':9 'curv':4 'galaxi':2 'measur':6 'rotat':3 'run':8 'use':7",
+      "pg_simple": "'averages':9 'curves':4 'galaxies':2 'measured':6 'rotation':3 'running':8 'the':1 'using':7 'were':5"
+    },
+    {
+      "sentence": "We studied Bose-Einstein condensates of ultracold atoms in optical lattices.",
+      "solr_stages": [
+        {
+          "stage": "StandardTokenizer",
+          "tokens": [
+            "We",
+            "studied",
+            "Bose",
+            "Einstein",
+            "condensates",
+            "of",
+            "ultracold",
+            "atoms",
+            "in",
+            "optical",
+            "lattices"
+          ]
+        },
+        {
+          "stage": "LowerCaseFilter",
+          "tokens": [
+            "we",
+            "studied",
+            "bose",
+            "einstein",
+            "condensates",
+            "of",
+            "ultracold",
+            "atoms",
+            "in",
+            "optical",
+            "lattices"
+          ]
+        },
+        {
+          "stage": "StopFilter",
+          "tokens": [
+            "we",
+            "studied",
+            "bose",
+            "einstein",
+            "condensates",
+            "ultracold",
+            "atoms",
+            "optical",
+            "lattices"
+          ]
+        },
+        {
+          "stage": "EnglishPossessiveFilter",
+          "tokens": [
+            "we",
+            "studied",
+            "bose",
+            "einstein",
+            "condensates",
+            "ultracold",
+            "atoms",
+            "optical",
+            "lattices"
+          ]
+        },
+        {
+          "stage": "SnowballFilter",
+          "tokens": [
+            "we",
+            "studi",
+            "bose",
+            "einstein",
+            "condens",
+            "ultracold",
+            "atom",
+            "optic",
+            "lattic"
+          ]
+        }
+      ],
+      "pg_english": "'atom':9 'bose':4 'bose-einstein':3 'condens':6 'einstein':5 'lattic':12 'optic':11 'studi':2 'ultracold':8",
+      "pg_simple": "'atoms':9 'bose':4 'bose-einstein':3 'condensates':6 'einstein':5 'in':10 'lattices':12 'of':7 'optical':11 'studied':2 'ultracold':8 'we':1"
+    },
+    {
+      "sentence": "Convolutional neural networks are not the only models for image classification.",
+      "solr_stages": [
+        {
+          "stage": "StandardTokenizer",
+          "tokens": [
+            "Convolutional",
+            "neural",
+            "networks",
+            "are",
+            "not",
+            "the",
+            "only",
+            "models",
+            "for",
+            "image",
+            "classification"
+          ]
+        },
+        {
+          "stage": "LowerCaseFilter",
+          "tokens": [
+            "convolutional",
+            "neural",
+            "networks",
+            "are",
+            "not",
+            "the",
+            "only",
+            "models",
+            "for",
+            "image",
+            "classification"
+          ]
+        },
+        {
+          "stage": "StopFilter",
+          "tokens": [
+            "convolutional",
+            "neural",
+            "networks",
+            "only",
+            "models",
+            "image",
+            "classification"
+          ]
+        },
+        {
+          "stage": "EnglishPossessiveFilter",
+          "tokens": [
+            "convolutional",
+            "neural",
+            "networks",
+            "only",
+            "models",
+            "image",
+            "classification"
+          ]
+        },
+        {
+          "stage": "SnowballFilter",
+          "tokens": [
+            "convolut",
+            "neural",
+            "network",
+            "onli",
+            "model",
+            "imag",
+            "classif"
+          ]
+        }
+      ],
+      "pg_english": "'classif':11 'convolut':1 'imag':10 'model':8 'network':3 'neural':2",
+      "pg_simple": "'are':4 'classification':11 'convolutional':1 'for':9 'image':10 'models':8 'networks':3 'neural':2 'not':5 'only':7 'the':6"
+    }
+  ]
+}

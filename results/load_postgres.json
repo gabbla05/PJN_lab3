@@ -1,0 +1,25 @@
+{
+  "timings_s": {
+    "schema": 0.1,
+    "copy_load (COPY + wyliczenie tsvector)": 582.6,
+    "indexes (GIN tsv + btree + trigram) + ANALYZE": 249.2,
+    "subsets 10%/50% (+ GIN)": 322.1
+  },
+  "stats": {
+    "arxiv": {
+      "rows": 1999486,
+      "total_size": "4952 MB"
+    },
+    "arxiv_50": {
+      "rows": 999798,
+      "total_size": "2328 MB"
+    },
+    "arxiv_10": {
+      "rows": 199875,
+      "total_size": "481 MB"
+    },
+    "arxiv_tsv_gin": "446 MB",
+    "arxiv_title_trgm": "299 MB",
+    "table_heap": "4118 MB"
+  }
+}

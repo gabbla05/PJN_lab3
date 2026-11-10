@@ -1,0 +1,980 @@
+{
+  "10": {
+    "records": 199875,
+    "queries": {
+      "Q1": {
+        "label": "slowo: galaxy",
+        "like": {
+          "sql": "SELECT count(*) FROM arxiv_10 WHERE (title ILIKE '%galaxy%' OR abstract ILIKE '%galaxy%')",
+          "result": 6106,
+          "rows": null,
+          "server_ms": 474.96,
+          "client_ms": 528.3,
+          "server_all_ms": [
+            411.41,
+            427.19,
+            474.96,
+            502.19,
+            524.91
+          ]
+        },
+        "pg_fts": {
+          "sql": "SELECT count(*) FROM arxiv_10 WHERE tsv @@ to_tsquery('english', 'galaxy')",
+          "result": 8430,
+          "rows": null,
+          "server_ms": 8.29,
+          "client_ms": 9.12,
+          "server_all_ms": [
+            8.27,
+            8.29,
+            8.13,
+            9.39,
+            9.2
+          ]
+        },
+        "solr": {
+          "url": "http://localhost:8983/solr/arxiv_10/select?q=text%3Agalaxy&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 8438,
+          "qtime_ms": 1,
+          "client_ms": 4.61,
+          "qtime_all_ms": [
+            3,
+            1,
+            1,
+            1,
+            0
+          ]
+        },
+        "solr_nocache": {
+          "url": "http://localhost:8983/solr/arxiv_10/select?q=%7B%21cache%3Dfalse%7Dtext%3Agalaxy&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 8438,
+          "qtime_ms": 2,
+          "client_ms": 6.5,
+          "qtime_all_ms": [
+            2,
+            3,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "Q2": {
+        "label": "fraza: \"dark matter halo\"",
+        "like": {
+          "sql": "SELECT count(*) FROM arxiv_10 WHERE (title ILIKE '%dark matter halo%' OR abstract ILIKE '%dark matter halo%')",
+          "result": 521,
+          "rows": null,
+          "server_ms": 622.89,
+          "client_ms": 621.0,
+          "server_all_ms": [
+            529.71,
+            668.05,
+            518.93,
+            683.87,
+            622.89
+          ]
+        },
+        "pg_fts": {
+          "sql": "SELECT count(*) FROM arxiv_10 WHERE tsv @@ phraseto_tsquery('english', 'dark matter halo')",
+          "result": 555,
+          "rows": null,
+          "server_ms": 4.8,
+          "client_ms": 6.59,
+          "server_all_ms": [
+            4.83,
+            4.75,
+            4.8,
+            4.61,
+            5.86
+          ]
+        },
+        "solr": {
+          "url": "http://localhost:8983/solr/arxiv_10/select?q=text%3A%22dark+matter+halo%22&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 557,
+          "qtime_ms": 1,
+          "client_ms": 4.94,
+          "qtime_all_ms": [
+            1,
+            1,
+            0,
+            0,
+            1
+          ]
+        },
+        "solr_nocache": {
+          "url": "http://localhost:8983/solr/arxiv_10/select?q=%7B%21cache%3Dfalse%7Dtext%3A%22dark+matter+halo%22&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 557,
+          "qtime_ms": 4,
+          "client_ms": 9.05,
+          "qtime_all_ms": [
+            6,
+            4,
+            3,
+            4,
+            3
+          ]
+        }
+      },
+      "Q3": {
+        "label": "neural AND (image OR speech) AND NOT convolutional",
+        "pg_fts": {
+          "sql": "SELECT count(*) FROM arxiv_10 WHERE tsv @@ to_tsquery('english', 'neural & (image | speech) & !convolutional')",
+          "result": 1113,
+          "rows": null,
+          "server_ms": 2.45,
+          "client_ms": 3.54,
+          "server_all_ms": [
+            1.98,
+            2.45,
+            2.57,
+            2.37,
+            3.57
+          ]
+        },
+        "solr": {
+          "url": "http://localhost:8983/solr/arxiv_10/select?q=%2Btext%3Aneural+%2B%28text%3Aimage+text%3Aspeech%29+-text%3Aconvolutional&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 1116,
+          "qtime_ms": 1,
+          "client_ms": 4.56,
+          "qtime_all_ms": [
+            1,
+            2,
+            0,
+            1,
+            30
+          ]
+        },
+        "solr_nocache": {
+          "url": "http://localhost:8983/solr/arxiv_10/select?q=%7B%21cache%3Dfalse%7D%2Btext%3Aneural+%2B%28text%3Aimage+text%3Aspeech%29+-text%3Aconvolutional&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 1116,
+          "qtime_ms": 4,
+          "client_ms": 8.12,
+          "qtime_all_ms": [
+            4,
+            4,
+            4,
+            3,
+            4
+          ]
+        }
+      }
+    }
+  },
+  "50": {
+    "records": 999798,
+    "queries": {
+      "Q1": {
+        "label": "slowo: galaxy",
+        "like": {
+          "sql": "SELECT count(*) FROM arxiv_50 WHERE (title ILIKE '%galaxy%' OR abstract ILIKE '%galaxy%')",
+          "result": 30303,
+          "rows": null,
+          "server_ms": 2599.17,
+          "client_ms": 2587.82,
+          "server_all_ms": [
+            2784.86,
+            2865.68,
+            2599.17,
+            2380.24,
+            2518.37
+          ]
+        },
+        "pg_fts": {
+          "sql": "SELECT count(*) FROM arxiv_50 WHERE tsv @@ to_tsquery('english', 'galaxy')",
+          "result": 42023,
+          "rows": null,
+          "server_ms": 43.24,
+          "client_ms": 43.13,
+          "server_all_ms": [
+            43.34,
+            37.84,
+            42.76,
+            46.89,
+            43.24
+          ]
+        },
+        "solr": {
+          "url": "http://localhost:8983/solr/arxiv_50/select?q=text%3Agalaxy&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 42054,
+          "qtime_ms": 0,
+          "client_ms": 3.73,
+          "qtime_all_ms": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "solr_nocache": {
+          "url": "http://localhost:8983/solr/arxiv_50/select?q=%7B%21cache%3Dfalse%7Dtext%3Agalaxy&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 42054,
+          "qtime_ms": 2,
+          "client_ms": 5.72,
+          "qtime_all_ms": [
+            2,
+            4,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "Q2": {
+        "label": "fraza: \"dark matter halo\"",
+        "like": {
+          "sql": "SELECT count(*) FROM arxiv_50 WHERE (title ILIKE '%dark matter halo%' OR abstract ILIKE '%dark matter halo%')",
+          "result": 2573,
+          "rows": null,
+          "server_ms": 2586.95,
+          "client_ms": 2761.67,
+          "server_all_ms": [
+            2969.65,
+            2586.95,
+            2588.01,
+            2479.1,
+            2473.12
+          ]
+        },
+        "pg_fts": {
+          "sql": "SELECT count(*) FROM arxiv_50 WHERE tsv @@ phraseto_tsquery('english', 'dark matter halo')",
+          "result": 2718,
+          "rows": null,
+          "server_ms": 23.22,
+          "client_ms": 24.66,
+          "server_all_ms": [
+            22.07,
+            25.29,
+            23.22,
+            24.55,
+            20.81
+          ]
+        },
+        "solr": {
+          "url": "http://localhost:8983/solr/arxiv_50/select?q=text%3A%22dark+matter+halo%22&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 2724,
+          "qtime_ms": 0,
+          "client_ms": 3.34,
+          "qtime_all_ms": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "solr_nocache": {
+          "url": "http://localhost:8983/solr/arxiv_50/select?q=%7B%21cache%3Dfalse%7Dtext%3A%22dark+matter+halo%22&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 2724,
+          "qtime_ms": 3,
+          "client_ms": 6.86,
+          "qtime_all_ms": [
+            4,
+            3,
+            3,
+            5,
+            3
+          ]
+        }
+      },
+      "Q3": {
+        "label": "neural AND (image OR speech) AND NOT convolutional",
+        "pg_fts": {
+          "sql": "SELECT count(*) FROM arxiv_50 WHERE tsv @@ to_tsquery('english', 'neural & (image | speech) & !convolutional')",
+          "result": 5494,
+          "rows": null,
+          "server_ms": 15.01,
+          "client_ms": 12.19,
+          "server_all_ms": [
+            12.49,
+            15.01,
+            11.52,
+            17.66,
+            16.1
+          ]
+        },
+        "solr": {
+          "url": "http://localhost:8983/solr/arxiv_50/select?q=%2Btext%3Aneural+%2B%28text%3Aimage+text%3Aspeech%29+-text%3Aconvolutional&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 5507,
+          "qtime_ms": 0,
+          "client_ms": 3.83,
+          "qtime_all_ms": [
+            1,
+            0,
+            0,
+            1,
+            0
+          ]
+        },
+        "solr_nocache": {
+          "url": "http://localhost:8983/solr/arxiv_50/select?q=%7B%21cache%3Dfalse%7D%2Btext%3Aneural+%2B%28text%3Aimage+text%3Aspeech%29+-text%3Aconvolutional&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 5507,
+          "qtime_ms": 4,
+          "client_ms": 8.63,
+          "qtime_all_ms": [
+            4,
+            4,
+            4,
+            4,
+            5
+          ]
+        }
+      }
+    }
+  },
+  "100": {
+    "records": 1999486,
+    "queries": {
+      "Q1": {
+        "label": "slowo: galaxy",
+        "like": {
+          "sql": "SELECT count(*) FROM arxiv WHERE (title ILIKE '%galaxy%' OR abstract ILIKE '%galaxy%')",
+          "result": 60580,
+          "rows": null,
+          "server_ms": 4854.49,
+          "client_ms": 4835.28,
+          "server_all_ms": [
+            5457.47,
+            5316.23,
+            4612.91,
+            4614.37,
+            4854.49
+          ]
+        },
+        "pg_fts": {
+          "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ to_tsquery('english', 'galaxy')",
+          "result": 84073,
+          "rows": null,
+          "server_ms": 81.36,
+          "client_ms": 81.31,
+          "server_all_ms": [
+            80.66,
+            78.04,
+            81.36,
+            96.57,
+            139.22
+          ]
+        },
+        "solr": {
+          "url": "http://localhost:8983/solr/arxiv/select?q=text%3Agalaxy&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 84129,
+          "qtime_ms": 0,
+          "client_ms": 3.95,
+          "qtime_all_ms": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "solr_nocache": {
+          "url": "http://localhost:8983/solr/arxiv/select?q=%7B%21cache%3Dfalse%7Dtext%3Agalaxy&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 84129,
+          "qtime_ms": 3,
+          "client_ms": 6.86,
+          "qtime_all_ms": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        },
+        "pg_filtered_count": {
+          "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ to_tsquery('english', 'galaxy') AND year >= 2015",
+          "result": 29022,
+          "rows": null,
+          "server_ms": 106.81,
+          "client_ms": 125.5,
+          "server_all_ms": [
+            162.9,
+            96.65,
+            106.81,
+            102.3,
+            114.82
+          ]
+        },
+        "pg_filtered_top10": {
+          "sql": "SELECT id, title, year, archive FROM arxiv WHERE tsv @@ to_tsquery('english', 'galaxy') AND year >= 2015 ORDER BY year DESC, id LIMIT 10",
+          "result": 10,
+          "rows": [
+            [
+              "2101.00013",
+              "VLT Spectroscopy of Ultra-Faint Dwarf Galaxies. 1. Bo\\\"otes I, Leo IV, Leo V",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.00113",
+              "Cosmological inference from emulator based halo model I: Validation tests with HSC and SDSS mock catalogs",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.00158",
+              "Local spiral structure based on the Gaia EDR3 parallaxes",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.00188",
+              "PKS1830-211: OH and HI at z=0.89 and the first MeerKAT UHF spectrum",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.00253",
+              "The MUSE-Faint survey. II. The dark matter-density profile of the ultra-faint dwarf galaxy Eridanus 2",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.00283",
+              "Optical Identification and Spectroscopy of Supernova Remnants in the Galaxy M51",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.00372",
+              "Analysing the radio flux density profile of the M31 galaxy: a possible dark matter interpretation",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.00456",
+              "A Nearby Galaxy Perspective on Dust Evolution. Scaling relations and constraints on the dust build-up in galaxies with the DustPedia and DGS samples",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.00662",
+              "The prospects for observing [OIII] 52 micron emission from galaxies during the Epoch of Reionization",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.00680",
+              "Properties of Compact Faint Radio Sources as a Function of Angular Size from Stacking",
+              2021,
+              "astro-ph"
+            ]
+          ],
+          "server_ms": 289.14,
+          "client_ms": 298.48,
+          "server_all_ms": [
+            284.3,
+            289.14,
+            284.0,
+            292.18,
+            312.78
+          ]
+        },
+        "solr_filtered": {
+          "url": "http://localhost:8983/solr/arxiv/select?q=text%3Agalaxy&fq=year%3A%5B2015+TO+%2A%5D&fl=id%2Ctitle%2Cyear%2Carchive&sort=year+desc%2Cid+asc&rows=10",
+          "numFound": 29048,
+          "qtime_ms": 0,
+          "client_ms": 3.77,
+          "qtime_all_ms": [
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "docs": [
+            {
+              "id": "2101.00013",
+              "title": "VLT Spectroscopy of Ultra-Faint Dwarf Galaxies. 1. Bo\\\"otes I, Leo IV, Leo V",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.00113",
+              "title": "Cosmological inference from emulator based halo model I: Validation tests with HSC and SDSS mock catalogs",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.00158",
+              "title": "Local spiral structure based on the Gaia EDR3 parallaxes",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.00188",
+              "title": "PKS1830-211: OH and HI at z=0.89 and the first MeerKAT UHF spectrum",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.00253",
+              "title": "The MUSE-Faint survey. II. The dark matter-density profile of the ultra-faint dwarf galaxy Eridanus 2",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.00283",
+              "title": "Optical Identification and Spectroscopy of Supernova Remnants in the Galaxy M51",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.00372",
+              "title": "Analysing the radio flux density profile of the M31 galaxy: a possible dark matter interpretation",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.00456",
+              "title": "A Nearby Galaxy Perspective on Dust Evolution. Scaling relations and constraints on the dust build-up in galaxies with the DustPedia and DGS samples",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.00662",
+              "title": "The prospects for observing [OIII] 52 micron emission from galaxies during the Epoch of Reionization",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.00680",
+              "title": "Properties of Compact Faint Radio Sources as a Function of Angular Size from Stacking",
+              "archive": "astro-ph",
+              "year": 2021
+            }
+          ]
+        }
+      },
+      "Q2": {
+        "label": "fraza: \"dark matter halo\"",
+        "like": {
+          "sql": "SELECT count(*) FROM arxiv WHERE (title ILIKE '%dark matter halo%' OR abstract ILIKE '%dark matter halo%')",
+          "result": 5105,
+          "rows": null,
+          "server_ms": 4233.1,
+          "client_ms": 4407.56,
+          "server_all_ms": [
+            4580.66,
+            4233.1,
+            4242.97,
+            4164.7,
+            4106.08
+          ]
+        },
+        "pg_fts": {
+          "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ phraseto_tsquery('english', 'dark matter halo')",
+          "result": 5413,
+          "rows": null,
+          "server_ms": 38.3,
+          "client_ms": 41.45,
+          "server_all_ms": [
+            38.3,
+            39.29,
+            39.48,
+            37.47,
+            38.22
+          ]
+        },
+        "solr": {
+          "url": "http://localhost:8983/solr/arxiv/select?q=text%3A%22dark+matter+halo%22&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 5423,
+          "qtime_ms": 1,
+          "client_ms": 4.58,
+          "qtime_all_ms": [
+            1,
+            5,
+            0,
+            3,
+            0
+          ]
+        },
+        "solr_nocache": {
+          "url": "http://localhost:8983/solr/arxiv/select?q=%7B%21cache%3Dfalse%7Dtext%3A%22dark+matter+halo%22&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 5423,
+          "qtime_ms": 9,
+          "client_ms": 14.03,
+          "qtime_all_ms": [
+            9,
+            10,
+            7,
+            9,
+            9
+          ]
+        },
+        "pg_filtered_count": {
+          "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ phraseto_tsquery('english', 'dark matter halo') AND archive = 'astro-ph'",
+          "result": 5156,
+          "rows": null,
+          "server_ms": 39.05,
+          "client_ms": 40.61,
+          "server_all_ms": [
+            38.75,
+            40.52,
+            39.05,
+            40.21,
+            36.55
+          ]
+        },
+        "pg_filtered_top10": {
+          "sql": "SELECT id, title, year, archive FROM arxiv WHERE tsv @@ phraseto_tsquery('english', 'dark matter halo') AND archive = 'astro-ph' ORDER BY year DESC, id LIMIT 10",
+          "result": 10,
+          "rows": [
+            [
+              "2101.00891",
+              "Polytropic spheres modelling dark matter halos of dwarf galaxies",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.01282",
+              "A cuspy dark matter halo",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.01455",
+              "Statistical exploration of halo anisotropic clustering and intrinsic alignments with the mass-Peak Patch algorithm",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.02688",
+              "EDGE: Two routes to dark matter core formation in ultra-faint dwarfs",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.04120",
+              "Assessing the accuracy of cosmological parameters estimated from velocity -- density comparisons via simulations",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.04958",
+              "Angular Momentum and the Absence of Vortices in the Cores of Fuzzy Dark Matter Haloes",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.05280",
+              "Observational Measures of Halo Properties Beyond Mass",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.06010",
+              "Bright galaxy sample in the Kilo-Degree Survey Data Release 4: selection, photometric redshifts, and physical properties",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.07806",
+              "Non-Halo Structures and their Effects on Gravitational Lensing",
+              2021,
+              "astro-ph"
+            ],
+            [
+              "2101.07822",
+              "A Census of the Extended Neutral Hydrogen Around 18 MHONGOOSE Galaxies",
+              2021,
+              "astro-ph"
+            ]
+          ],
+          "server_ms": 39.98,
+          "client_ms": 41.89,
+          "server_all_ms": [
+            36.96,
+            39.32,
+            40.59,
+            39.98,
+            41.95
+          ]
+        },
+        "solr_filtered": {
+          "url": "http://localhost:8983/solr/arxiv/select?q=text%3A%22dark+matter+halo%22&fq=archive%3Aastro-ph&fl=id%2Ctitle%2Cyear%2Carchive&sort=year+desc%2Cid+asc&rows=10",
+          "numFound": 5166,
+          "qtime_ms": 1,
+          "client_ms": 4.76,
+          "qtime_all_ms": [
+            1,
+            0,
+            6,
+            0,
+            1
+          ],
+          "docs": [
+            {
+              "id": "2101.00891",
+              "title": "Polytropic spheres modelling dark matter halos of dwarf galaxies",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.01282",
+              "title": "A cuspy dark matter halo",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.01455",
+              "title": "Statistical exploration of halo anisotropic clustering and intrinsic alignments with the mass-Peak Patch algorithm",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.02688",
+              "title": "EDGE: Two routes to dark matter core formation in ultra-faint dwarfs",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.04120",
+              "title": "Assessing the accuracy of cosmological parameters estimated from velocity -- density comparisons via simulations",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.04958",
+              "title": "Angular Momentum and the Absence of Vortices in the Cores of Fuzzy Dark Matter Haloes",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.05280",
+              "title": "Observational Measures of Halo Properties Beyond Mass",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.06010",
+              "title": "Bright galaxy sample in the Kilo-Degree Survey Data Release 4: selection, photometric redshifts, and physical properties",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.07806",
+              "title": "Non-Halo Structures and their Effects on Gravitational Lensing",
+              "archive": "astro-ph",
+              "year": 2021
+            },
+            {
+              "id": "2101.07822",
+              "title": "A Census of the Extended Neutral Hydrogen Around 18 MHONGOOSE Galaxies",
+              "archive": "astro-ph",
+              "year": 2021
+            }
+          ]
+        }
+      },
+      "Q3": {
+        "label": "neural AND (image OR speech) AND NOT convolutional",
+        "pg_fts": {
+          "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ to_tsquery('english', 'neural & (image | speech) & !convolutional')",
+          "result": 10692,
+          "rows": null,
+          "server_ms": 19.0,
+          "client_ms": 20.84,
+          "server_all_ms": [
+            20.31,
+            19.82,
+            18.61,
+            19.0,
+            18.31
+          ]
+        },
+        "solr": {
+          "url": "http://localhost:8983/solr/arxiv/select?q=%2Btext%3Aneural+%2B%28text%3Aimage+text%3Aspeech%29+-text%3Aconvolutional&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 10713,
+          "qtime_ms": 0,
+          "client_ms": 3.5,
+          "qtime_all_ms": [
+            0,
+            0,
+            0,
+            1,
+            0
+          ]
+        },
+        "solr_nocache": {
+          "url": "http://localhost:8983/solr/arxiv/select?q=%7B%21cache%3Dfalse%7D%2Btext%3Aneural+%2B%28text%3Aimage+text%3Aspeech%29+-text%3Aconvolutional&fl=id%2Ctitle%2Cyear%2Carchive%2Cscore&sort=score+desc%2Cid+asc&rows=10",
+          "numFound": 10713,
+          "qtime_ms": 22,
+          "client_ms": 26.27,
+          "qtime_all_ms": [
+            37,
+            22,
+            26,
+            21,
+            17
+          ]
+        },
+        "pg_filtered_count": {
+          "sql": "SELECT count(*) FROM arxiv WHERE tsv @@ to_tsquery('english', 'neural & (image | speech) & !convolutional') AND archive = 'cs'",
+          "result": 7999,
+          "rows": null,
+          "server_ms": 49.73,
+          "client_ms": 52.54,
+          "server_all_ms": [
+            50.39,
+            47.19,
+            49.73,
+            50.75,
+            46.44
+          ]
+        },
+        "pg_filtered_top10": {
+          "sql": "SELECT id, title, year, archive FROM arxiv WHERE tsv @@ to_tsquery('english', 'neural & (image | speech) & !convolutional') AND archive = 'cs' ORDER BY year DESC, id LIMIT 10",
+          "result": 10,
+          "rows": [
+            [
+              "2101.00008",
+              "Explainability Matters: Backdoor Attacks on Medical Imaging",
+              2021,
+              "cs"
+            ],
+            [
+              "2101.00157",
+              "Active Learning Under Malicious Mislabeling and Poisoning Attacks",
+              2021,
+              "cs"
+            ],
+            [
+              "2101.00214",
+              "A Hybrid MLP-SVM Model for Classification using Spatial-Spectral Features on Hyper-Spectral Images",
+              2021,
+              "cs"
+            ],
+            [
+              "2101.00215",
+              "Improved Neural Network based Plant Diseases Identification",
+              2021,
+              "cs"
+            ],
+            [
+              "2101.00337",
+              "Biologically Inspired Hexagonal Deep Learning for Hexagonal Image Generation",
+              2021,
+              "cs"
+            ],
+            [
+              "2101.00350",
+              "Multi-Image Steganography Using Deep Neural Networks",
+              2021,
+              "cs"
+            ],
+            [
+              "2101.00395",
+              "Image-based Textile Decoding",
+              2021,
+              "cs"
+            ],
+            [
+              "2101.00479",
+              "DEVI: Open-source Human-Robot Interface for Interactive Receptionist Systems",
+              2021,
+              "cs"
+            ],
+            [
+              "2101.00813",
+              "Shed Various Lights on a Low-Light Image: Multi-Level Enhancement Guided by Arbitrary References",
+              2021,
+              "cs"
+            ],
+            [
+              "2101.00905",
+              "On Baselines for Local Feature Attributions",
+              2021,
+              "cs"
+            ]
+          ],
+          "server_ms": 52.5,
+          "client_ms": 55.98,
+          "server_all_ms": [
+            52.09,
+            59.45,
+            52.5,
+            56.19,
+            49.59
+          ]
+        },
+        "solr_filtered": {
+          "url": "http://localhost:8983/solr/arxiv/select?q=%2Btext%3Aneural+%2B%28text%3Aimage+text%3Aspeech%29+-text%3Aconvolutional&fq=archive%3Acs&fl=id%2Ctitle%2Cyear%2Carchive&sort=year+desc%2Cid+asc&rows=10",
+          "numFound": 8018,
+          "qtime_ms": 2,
+          "client_ms": 5.97,
+          "qtime_all_ms": [
+            2,
+            3,
+            0,
+            1,
+            2
+          ],
+          "docs": [
+            {
+              "id": "2101.00008",
+              "title": "Explainability Matters: Backdoor Attacks on Medical Imaging",
+              "archive": "cs",
+              "year": 2021
+            },
+            {
+              "id": "2101.00157",
+              "title": "Active Learning Under Malicious Mislabeling and Poisoning Attacks",
+              "archive": "cs",
+              "year": 2021
+            },
+            {
+              "id": "2101.00214",
+              "title": "A Hybrid MLP-SVM Model for Classification using Spatial-Spectral Features on Hyper-Spectral Images",
+              "archive": "cs",
+              "year": 2021
+            },
+            {
+              "id": "2101.00215",
+              "title": "Improved Neural Network based Plant Diseases Identification",
+              "archive": "cs",
+              "year": 2021
+            },
+            {
+              "id": "2101.00337",
+              "title": "Biologically Inspired Hexagonal Deep Learning for Hexagonal Image Generation",
+              "archive": "cs",
+              "year": 2021
+            },
+            {
+              "id": "2101.00350",
+              "title": "Multi-Image Steganography Using Deep Neural Networks",
+              "archive": "cs",
+              "year": 2021
+            },
+            {
+              "id": "2101.00395",
+              "title": "Image-based Textile Decoding",
+              "archive": "cs",
+              "year": 2021
+            },
+            {
+              "id": "2101.00479",
+              "title": "DEVI: Open-source Human-Robot Interface for Interactive Receptionist Systems",
+              "archive": "cs",
+              "year": 2021
+            },
+            {
+              "id": "2101.00813",
+              "title": "Shed Various Lights on a Low-Light Image: Multi-Level Enhancement Guided by Arbitrary References",
+              "archive": "cs",
+              "year": 2021
+            },
+            {
+              "id": "2101.00905",
+              "title": "On Baselines for Local Feature Attributions",
+              "archive": "cs",
+              "year": 2021
+            }
+          ]
+        }
+      }
+    }
+  }
+}
