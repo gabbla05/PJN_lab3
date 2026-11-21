@@ -32,7 +32,7 @@ def main():
             n = conn.execute(f"SELECT count(*) FROM {t}").fetchone()[0]
             res = {"records": n, "queries": {}}
             print(f"=== {size}% ({t}, {n:,} rekordow)")
-            for qid, q in QUERIES.items():
+            for qid, q in QUERIES.items(): # dla każdego zapytania Q1 Q2 i Q3 wykonaj pomiary w PostgreSQL i Solrze
                 r = {"label": q["label"]}
                 if q["like"]:
                     r["like"] = pg_measure(conn, pg_like_sql(t, qid))
@@ -48,9 +48,9 @@ def main():
                 r["solr_nocache"] = nc
                 if size == 100:
                     r["pg_filtered_count"] = pg_measure(conn, pg_filtered_count_sql(t, qid))
-                    pf = pg_measure(conn, pg_filtered_sql(t, qid))
+                    pf = pg_measure(conn, pg_filtered_sql(t, qid))  # pomiar wariantu z filtrem i sortowaniem w PostgreSQL
                     r["pg_filtered_top10"] = pf
-                    sf = solr_measure(t, solr_filtered_params(qid))
+                    sf = solr_measure(t, solr_filtered_params(qid)) # pomiar wariantu z filtrem i sortowaniem w Solr
                     sf["docs"] = sf.pop("response")["response"]["docs"]
                     r["solr_filtered"] = sf
                 res["queries"][qid] = r

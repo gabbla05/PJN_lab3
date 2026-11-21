@@ -112,49 +112,99 @@ ROWS = 20
 
 
 def paging(conn):
+    # wyniki pomiarów dla różnych metod stronicowania
     out = {"rows": ROWS, "start_rows": {}, "cursor": {}, "pg_offset": {}, "pg_keyset": {}}
+
+    # wspólne parametry wszystkich zapytań Solr
     base = {"q": "*:*", "sort": "id asc", "fl": "id", "rows": ROWS}
+
+    # klasyczne stronicowanie Solra (start + rows)
+    # mierzymy czas pobrania strony znajdującej się na różnych głębokościach
     for d in DEPTHS:
         s = solr_measure(T, {**base, "start": d})
         s.pop("response")
         out["start_rows"][d] = s
 
-    # cursorMark: przejscie do glebokosci duzymi krokami, potem pomiar pobrania strony
+    # cursorMark:
+    # przechodzimy do kolejnych głębokich pozycji i zapamiętujemy
+    # kursor odpowiadający danej głębokości
     t0 = time.perf_counter()
     cursor, pos, step = "*", 0, 10000
+
+    # dla każdej głębokości będziemy pamiętać odpowiadający jej cursorMark
     marks = {0: "*"}
+
     for d in sorted(DEPTHS[1:]):
         while pos < d:
+            # przesuwaj się po wynikach dużymi krokami
             n = min(step, d - pos)
-            js = S.get(f"{SOLR}/{T}/select", params={**base, "rows": n, "cursorMark": cursor}).json()
+
+            js = S.get(
+                f"{SOLR}/{T}/select",
+                params={**base, "rows": n, "cursorMark": cursor}
+            ).json()
+
             cursor, pos = js["nextCursorMark"], pos + n
+
         marks[d] = cursor
+
     walk_s = time.perf_counter() - t0
+
+    # zmierz czas pobrania strony przy użyciu cursorMark
     for d, m in marks.items():
         s = solr_measure(T, {**base, "cursorMark": m})
         s.pop("response")
         out["cursor"][d] = s
+
+    # koszt "dojścia" kursorem do największej głębokości
     out["cursor_walk_to_1M_s"] = round(walk_s, 1)
 
-    # SQL: OFFSET vs keyset (WHERE id > ostatni_id)
+    # SQL: klasyczne stronicowanie OFFSET
     ids = {}
+
     for d in DEPTHS:
-        out["pg_offset"][d] = pg_measure(conn, f"SELECT id FROM {T} ORDER BY id OFFSET {d} LIMIT {ROWS}")
+        out["pg_offset"][d] = pg_measure(
+            conn,
+            f"SELECT id FROM {T} ORDER BY id OFFSET {d} LIMIT {ROWS}"
+        )
+
         out["pg_offset"][d].pop("rows")
+
+        # zapamiętaj ostatni identyfikator przed daną stroną,
+        # będzie potrzebny do keyset pagination
         if d:
-            ids[d] = conn.execute(f"SELECT id FROM {T} ORDER BY id OFFSET {d - 1} LIMIT 1").fetchone()[0]
+            ids[d] = conn.execute(
+                f"SELECT id FROM {T} ORDER BY id OFFSET {d - 1} LIMIT 1"
+            ).fetchone()[0]
+
+    # SQL keyset pagination (WHERE id > ostatni_id)
     for d in DEPTHS:
         cond = f"WHERE id > '{ids[d]}' " if d else ""
-        out["pg_keyset"][d] = pg_measure(conn, f"SELECT id FROM {T} {cond}ORDER BY id LIMIT {ROWS}")
+
+        out["pg_keyset"][d] = pg_measure(
+            conn,
+            f"SELECT id FROM {T} {cond}ORDER BY id LIMIT {ROWS}"
+        )
+
         out["pg_keyset"][d].pop("rows")
+
+    # zestawienie wszystkich metod dla tej samej głębokości
     for d in DEPTHS:
-        print(f"depth {d:>8}: start/rows {out['start_rows'][d]['qtime_ms']:>7}ms | "
-              f"cursorMark {out['cursor'][d]['qtime_ms']:>5}ms | OFFSET {out['pg_offset'][d]['server_ms']:>8}ms | "
-              f"keyset {out['pg_keyset'][d]['server_ms']}ms")
+        print(
+            f"depth {d:>8}: "
+            f"start/rows {out['start_rows'][d]['qtime_ms']:>7}ms | "
+            f"cursorMark {out['cursor'][d]['qtime_ms']:>5}ms | "
+            f"OFFSET {out['pg_offset'][d]['server_ms']:>8}ms | "
+            f"keyset {out['pg_keyset'][d]['server_ms']}ms"
+        )
+
     return out
 
 
 # ---------------------------------------------------------------- E4 analiza
+
+# Zdania testowe używane do porównania analizy tekstu
+# w Solr (text_en_lab) oraz PostgreSQL (to_tsvector).
 SENTENCES = [
     "The galaxies' rotation curves were measured using running averages.",
     "We studied Bose-Einstein condensates of ultracold atoms in optical lattices.",
@@ -163,24 +213,63 @@ SENTENCES = [
 
 
 def analysis(conn):
+    # wyniki analizy każdego zdania
     out = []
+
     for sent in SENTENCES:
-        js = S.get(f"{SOLR}/{T}/analysis/field",
-                   params={"analysis.fieldtype": "text_en_lab", "analysis.fieldvalue": sent,
-                           "wt": "json"}).json()
+
+        # pobierz z Solra kolejne etapy łańcucha analizy
+        # zdefiniowanego dla typu text_en_lab
+        js = S.get(
+            f"{SOLR}/{T}/analysis/field",
+            params={
+                "analysis.fieldtype": "text_en_lab",
+                "analysis.fieldvalue": sent,
+                "wt": "json"
+            }
+        ).json()
+
         idx = js["analysis"]["field_types"]["text_en_lab"]["index"]
+
         stages = []
+
+        # odczytaj tokeny po każdym filtrze
+        # (tokenizer, lowercase, stopwords, stemming itd.)
         for i in range(0, len(idx), 2):
             name = idx[i].split(".")[-1]
             toks = [t["text"] for t in idx[i + 1]]
-            stages.append({"stage": name, "tokens": toks})
-        pg_vec = conn.execute("SELECT to_tsvector('english', %s)::text", (sent,)).fetchone()[0]
-        pg_simple = conn.execute("SELECT to_tsvector('simple', %s)::text", (sent,)).fetchone()[0]
-        out.append({"sentence": sent, "solr_stages": stages, "pg_english": pg_vec,
-                    "pg_simple": pg_simple})
+
+            stages.append({
+                "stage": name,
+                "tokens": toks
+            })
+
+        # analiza PostgreSQL z konfiguracją angielską
+        # (stop words + stemming)
+        pg_vec = conn.execute(
+            "SELECT to_tsvector('english', %s)::text",
+            (sent,)
+        ).fetchone()[0]
+
+        # analiza PostgreSQL bez stemmera i stoplisty
+        # wykorzystywana do porównania ("simple")
+        pg_simple = conn.execute(
+            "SELECT to_tsvector('simple', %s)::text",
+            (sent,)
+        ).fetchone()[0]
+
+        out.append({
+            "sentence": sent,
+            "solr_stages": stages,
+            "pg_english": pg_vec,
+            "pg_simple": pg_simple
+        })
+
+        # wypisz końcowy wynik Solra i PostgreSQL
         print(sent)
         print("   Solr:", stages[-1]["tokens"])
         print("   PG  :", pg_vec)
+
     return out
 
 
